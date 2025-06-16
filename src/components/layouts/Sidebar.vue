@@ -17,11 +17,6 @@
 </template>
 
 <script setup>
-  const navLinks = [
-    { path: '/dashboard', label: 'Báo cáo thống kê' },
-    { path: '/event-category', label: 'Quản lý danh mục sự kiện' },
-    { path: '/events', label: 'Quản lý sự kiện' },
-    { path: '/users', label: 'Quản lý người dùng' },
-    { path: '/departments', label: 'Quản lý phòng ban' }
-  ];
+  import { routeDefinitions } from '../../router/routes';
+  const navLinks = routeDefinitions.map(({ path, label }) => ({ path, label }));
 </script>
