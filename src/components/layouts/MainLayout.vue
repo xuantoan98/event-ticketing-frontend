@@ -1,0 +1,40 @@
+<template>
+  <div class="h-screen flex flex-col">
+    <!-- Header -->
+    <header class="h-16 bg-white shadow px-6 flex items-center">
+      <HeaderLayout :breadcrumb-items="['Dashboard']" :page-title="pageTitle" />
+    </header>
+
+    <!-- Body: Sidebar + Main -->
+    <div class="flex flex-1 overflow-hidden">
+      <!-- Sidebar -->
+      <aside class="w-64 bg-gray-100 p-4 overflow-y-auto">
+        <Sidebar />
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 bg-gray-50 p-6 overflow-y-auto">
+        <router-view />
+      </main>
+    </div>
+  </div>
+</template>
+
+<script setup>
+  import HeaderLayout from './HeaderLayout.vue'
+  import Sidebar from './Sidebar.vue'
+
+  import { useRoute } from 'vue-router'
+  import { computed } from 'vue'
+  
+  const route = useRoute();
+  const pageTitle = computed(() => {
+    const map = {
+      '/dashboard': 'Trang thong ke',
+      '/users': 'Quản lý người dùng'
+    }
+
+    return map[route.path] || 'Trang chính';
+  });
+  
+</script>
