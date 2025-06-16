@@ -36,7 +36,7 @@
   const route = useRoute();
   const pageTitle = computed(() => {
     const map = {
-      '/dashboard': 'Trang thong ke',
+      '/dashboard': 'Trang thống kê',
       '/users': 'Quản lý người dùng'
     }
 
