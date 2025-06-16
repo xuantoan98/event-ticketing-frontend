@@ -1,27 +1,22 @@
 <template>
-  <el-menu
-    class="sidebar"
-    default-active="$route.path"
-    @select="handleSelect"
-    router
-  >
-    <el-menu-item index="/dashboard">Báo cáo thống kê</el-menu-item>
-    <el-menu-item index="/users">Quản lý người dùng</el-menu-item>
-  </el-menu>
+  <ul class="space-y-2">
+    <li class="m-0">
+      <router-link to="/dashboard" class="block px-4 py-2 rounded-sm hover:bg-gray-200" active-class="bg-gray-300 font-semibold">
+        Thống kê
+      </router-link>
+    </li>
+    <li class="m-0">
+      <router-link to="/users" class="block px-4 py-2 rounded-sm hover:bg-gray-200" active-class="bg-gray-300 font-semibold">
+        Quản lý người dùng
+      </router-link>
+    </li>
+  </ul>
 </template>
 
 <script setup>
-  import { useRouter } from 'vue-router';
 
-  const router = useRouter();
-  const handleSelect = (index) => {
-    router.push(index);
-  }
 </script>
 
 <style scoped>
-  .sidebar {
-    height: 100%;
-    border-right: 1px solid #ebeef5;
-  }
+
 </style>

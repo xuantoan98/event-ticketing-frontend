@@ -1,20 +1,26 @@
 <template>
   <div class="h-screen flex flex-col">
     <!-- Header -->
-    <header class="h-16 bg-white shadow px-6 flex items-center">
-      <HeaderLayout :breadcrumb-items="['Dashboard']" :page-title="pageTitle" />
+    <header class="p-4 bg-gray-100">
+      <div class="h-16 bg-white shadow px-4 flex items-center rounded-sm">
+        <HeaderLayout :breadcrumb-items="['Dashboard']" :page-title="pageTitle" />
+      </div>
     </header>
 
     <!-- Body: Sidebar + Main -->
     <div class="flex flex-1 overflow-hidden">
       <!-- Sidebar -->
-      <aside class="w-64 bg-gray-100 p-4 overflow-y-auto">
-        <Sidebar />
+      <aside class="w-64 bg-gray-100 px-4 overflow-y-auto">
+        <div class="bg-white h-full rounded-sm shadow">
+          <Sidebar />
+        </div>
       </aside>
 
       <!-- Main Content -->
-      <main class="flex-1 bg-gray-50 p-6 overflow-y-auto">
-        <router-view />
+      <main class="flex-1 bg-gray-100 overflow-y-auto pr-4">
+        <div class="w-full h-full bg-white p-4 rounded-sm shadow">
+          <router-view />
+        </div>
       </main>
     </div>
   </div>
