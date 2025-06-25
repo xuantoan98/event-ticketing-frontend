@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { routeDefinitions } from "./routes";
+import { useAuthStore } from "../stores/auth";
 
 const routes = [
   ...routeDefinitions.map(({ path, component }) => ({ path, component })),
@@ -9,6 +10,22 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes
+});
+
+router.beforeEach((to, from, next) => {
+  const auth = useAuthStore();
+  const isPublic = to.meta?.public;
+  const isLoggedIn = auth.isAuthenticated;
+
+  if (!isPublic && !isLoggedIn && to.path !== '/login') {
+    return next('/login');
+  }
+
+  if (isLoggedIn && to.path === '/login') {
+    return next('/dashboard'); // Nếu login rồi mà vào lại login thì redirect
+  }
+
+  next();
 });
 
 export default router;

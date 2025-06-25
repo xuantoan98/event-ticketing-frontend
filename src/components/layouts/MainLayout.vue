@@ -27,11 +27,11 @@
 </template>
 
 <script setup>
-  import HeaderLayout from './HeaderLayout.vue'
-  import Sidebar from './Sidebar.vue'
+  import HeaderLayout from './HeaderLayout.vue';
+  import Sidebar from './Sidebar.vue';
 
-  import { useRoute } from 'vue-router'
-  import { computed } from 'vue'
+  import { useRoute } from 'vue-router';
+  import { computed } from 'vue';
   
   const route = useRoute();
   const pageTitle = computed(() => {
