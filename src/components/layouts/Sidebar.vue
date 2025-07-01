@@ -18,5 +18,5 @@
 
 <script setup>
   import { routeDefinitions } from '../../router/routes';
-  const navLinks = routeDefinitions.map(({ path, label }) => ({ path, label }));
+  const navLinks = routeDefinitions.map(({ path, label }) => ({ path: `/${path}`, label }));
 </script>

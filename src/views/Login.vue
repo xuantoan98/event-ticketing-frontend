@@ -11,7 +11,7 @@
           <div>
             <label for="email" class="block text-sm/6 font-medium text-gray-900">Email address</label>
             <div class="mt-2">
-              <input type="email" name="email" id="email" autocomplete="email" required="" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+              <input v-model="email" type="email" name="email" id="email" autocomplete="email" required="" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
             </div>
           </div>
 
@@ -23,7 +23,7 @@
               </div>
             </div>
             <div class="mt-2">
-              <input type="password" name="password" id="password" autocomplete="current-password" required="" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+              <input type="password" name="password" id="password" autocomplete="current-password" required="" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" v-model="password" />
             </div>
           </div>
 
@@ -43,24 +43,37 @@
 <script setup>
   import { useRouter } from 'vue-router';
   import { useAuthStore } from '../stores/auth';
+  import axios from 'axios';
+  import { ref } from 'vue';
 
   const router = useRouter();
   const auth = useAuthStore();
-
+  const email = ref('');
+  const password = ref('');
+  
   function checkValidateLogin(event) {
     event.preventDefault();
     // Here you can add validation logic if needed
+
     
     // handleLogin();
   }
 
-  // function handleLogin() {
-  //   const fakeUser = {
-  //     user: { name: 'John Doe' },
-  //     token: 'fake-jwt-token'
-  //   }
+  async function handleLogin() {
+    try {
+      const response = await axios.post('auth/login', {
+        email: email.value,
+        password: password.value
+      });
 
-  //   auth.login(fakeUser);
-  //   router.push('/dashboard');
-  // }
+      auth.login({
+        user: response.data.data.user,
+        token: response.data.data.tokens.accessToken
+      });
+      
+      router.push('/');
+    } catch (error) {
+      console.error('Login failed: ', error);
+    }
+  }
 </script>

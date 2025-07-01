@@ -3,8 +3,27 @@ import { routeDefinitions } from "./routes";
 import { useAuthStore } from "../stores/auth";
 
 const routes = [
-  ...routeDefinitions.map(({ path, component }) => ({ path, component })),
-  { path: '/', redirect: '/dashboard' }
+  {
+    path: '/login',
+    component: () => import('../views/Login.vue'), // Layout riêng, không MainLayout
+    meta: { public: true }
+  },
+  {
+    path: '/',
+    component: () => import('../components/layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        redirect: '/dashboard'
+      },
+      ...routeDefinitions
+    ]
+  },
+  // Fallback
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/dashboard'
+  }
 ];
 
 const router = createRouter({
