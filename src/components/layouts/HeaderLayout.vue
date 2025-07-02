@@ -4,10 +4,11 @@
       <img src="../../assets/logo-cs.png" alt="Logo" class="w-full h-full object-cover">
     </div>
 
-    <div class="border border-[lightgray] bg-[#EFF0F6] rounded-sm p-2 flex items-center justify-center">
+    <div class="border border-[lightgray] bg-[#EFF0F6] rounded-sm py-2 px-4 flex items-center justify-center">
       <el-dropdown trigger="click">
         <span class="el-dropdown-link flex items-center justify-center gap-x-2 text-[#191919]">
-          <img :src="auth.user.avatar" alt="#" class="block w-[25px] h-[25px] rounded-full object-cover">
+          <img v-if="auth.user.avatar" :src="auth.user.avatar" alt="#" class="block w-[25px] h-[25px] rounded-full object-cover">
+          <img v-else src="../../assets/vue.svg" alt="#" class="block w-[25px] h-[25px] rounded-full object-cover">
           {{ auth.user.name }}
           <el-icon class="el-icon--right"><DCaret /></el-icon>
         </span>
@@ -34,7 +35,7 @@
                 Change password
               </div>
             </el-dropdown-item>
-            <el-dropdown-item>
+            <el-dropdown-item @click="handleLogout">
               <div class="flex items-center gap-x-3">
                 <el-icon class="!m-0" :size="18"><SwitchButton /></el-icon>
                 Logout
