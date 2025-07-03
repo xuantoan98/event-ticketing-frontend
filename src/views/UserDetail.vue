@@ -2,11 +2,11 @@
   <div>
     <!-- banner user -->
     <div class="block w-full h-[100px]">
-      <img src="../assets/user-banner.jpg" alt="">
+      <img class="w-full h-full object-cover block rounded-t-sm" src="../assets/user-banner.jpg" alt="">
     </div>
 
     <!-- info user -->
-    <div class="block w-full">
+    <div class="block mt-4 w-full">
       <div class="flex items-center justify-between mb-8">
         <div class="flex items-center gap-4">
           <img v-if="auth.user.avatar" :src="auth.user.avatar" alt="Avatar" class="w-16 h-16 rounded-full object-cover" />
@@ -34,61 +34,122 @@
             </p>
           </div>
         </div>
-        <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">Edit</button>
+        <el-button type="primary" @click="handleIsEdit">
+          {{ isEdit ? 'Lưu thay đổi' : 'Cập nhật thông tin' }}
+        </el-button>
       </div>
 
-      <form class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label class="block text-sm/6 font-medium text-gray-900">Tên người dùng</label>
-          <input type="text" placeholder="Tên người dùng" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
-        </div>
-        <div>
-          <label class="block text-sm/6 font-medium text-gray-900">Email</label>
-          <input type="text" placeholder="Email" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
-        </div>
+      <el-form class="grid gap-6" @submit.prevent>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm/6 font-medium text-gray-900">Tên người dùng</label>
+            <el-input v-model="name" type="text" placeholder="Tên người dùng" :disabled="!isEdit" />
+          </div>
+          <div>
+            <label class="block text-sm/6 font-medium text-gray-900">Email</label>
+            <el-input v-model="email" type="text" placeholder="Email" :disabled="!isEdit" />
+          </div>
 
-        <!-- Row 2 -->
-        <div>
-          <label class="block text-sm/6 font-medium text-gray-900">Giới tính</label>
-          <el-select v-model="gender" placeholder="Giới tính" style="width: 100%; height: 36px;">
-            <el-option
-              v-for="item in genderOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+          <!-- Row 2 -->
+          <div>
+            <label class="block text-sm/6 font-medium text-gray-900">Giới tính</label>
+            <el-select v-model="gender" placeholder="Giới tính" :disabled="!isEdit">
+              <el-option
+                v-for="item in genderOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </div>
+          <div>
+            <label class="block text-sm/6 font-medium text-gray-900">Ngày sinh</label>
+            <el-date-picker
+              v-model="dateOfBirth"
+              type="date"
+              placeholder="Ngày sinh"
+              style="width: 100%;"
+              :disabled="!isEdit"
             />
-          </el-select>
-        </div>
-        <div>
-          <label class="block text-sm/6 font-medium text-gray-900">Ngày sinh</label>
-          <el-date-picker
-            type="date"
-            placeholder="Ngày sinh"
-            style="width: 100%; height: 36px;"
-          />
-        </div>
+          </div>
 
-        <!-- Row 3 -->
-         <div>
-          <label for="phone" class="block text-sm/6 font-medium text-gray-900">Số điện thoại <span class="text-sm text-red-500">*</span></label>
-          <div class="mt-1">
-            <input v-model="phone" type="text" name="phone" id="phone" autocomplete="phone" placeholder="Số điện thoại" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+          <!-- Row 3 -->
+          <div>
+            <label for="phone" class="block text-sm/6 font-medium text-gray-900">Số điện thoại <span class="text-sm text-red-500">*</span></label>
+            <div class="mt-1">
+              <el-input v-model="phone" type="text" name="phone" id="phone" autocomplete="phone" placeholder="Số điện thoại" :disabled="!isEdit" />
+            </div>
+          </div>
+
+          <div>
+            <label for="phone" class="block text-sm/6 font-medium text-gray-900">Chức vụ</label>
+            <div class="mt-1">
+              <el-input v-model="userRole" type="text" name="phone" id="phone" autocomplete="phone" placeholder="Số điện thoại" disabled />
+            </div>
           </div>
         </div>
 
-        <div>
+        <div class="w-full">
           <label for="address" class="block text-sm/6 font-medium text-gray-900">Địa chỉ</label>
           <div class="mt-1">
-            <input v-model="address" type="text" name="address" id="address" placeholder="Địa chỉ" autocomplete="address" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+            <el-input v-model="address" type="text" name="address" id="address" placeholder="Địa chỉ" autocomplete="address" :disabled="!isEdit" />
           </div>
         </div>
-      </form>
+      </el-form>
     </div>
   </div>
 </template>
 
 <script setup>
+  import { computed, onMounted, ref } from 'vue';
   import { useAuthStore } from '../stores/auth';
+  import { useGenderOptionsStore } from '../stores/genderOptions';
+  import { useField } from 'vee-validate';
 
   const auth = useAuthStore();
+  const genderOptionsStore = useGenderOptionsStore();
+
+  const genderOptions = genderOptionsStore.genderOptions;
+  const { value: email } = useField('email');
+  const { value: name } = useField('name');
+  const { value: phone } = useField('phone');
+  const { value: dateOfBirth } = useField('dateOfBirth');
+  const { value: gender } = useField('gender');
+  const { value: address } = useField('address');
+
+  const isEdit = ref(false);
+  
+  onMounted(() => {
+    if (auth.user) {
+      email.value = auth.user.email || '';
+      name.value = auth.user.name || '';
+      phone.value = auth.user.phone || '';
+      dateOfBirth.value = auth.user.dateOfBirth || '';
+      gender.value = auth.user.gender || '';
+      address.value = auth.user.address || '';
+    }
+  });
+
+  const userRole = computed(() => {
+    switch (auth.user.role) {
+    case 'admin':
+      return 'Quản trị viên';
+    case 'employee':
+      return 'Nhân viên';
+    case 'customer':
+      return 'Khách hàng';
+    default:
+      return 'Không xác định';
+    }
+  });
+
+  const handleIsEdit = async () => {
+    if (isEdit.value) {
+      // Call api update user
+
+      console.log('call api update user');
+    }
+
+    isEdit.value = !isEdit.value;
+  }
 </script>

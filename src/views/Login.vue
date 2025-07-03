@@ -7,11 +7,11 @@
       </div>
 
       <div class="mt-6">
-        <form class="space-y-6" action="#" method="POST" @submit.prevent="onSubmit">
+        <el-form class="space-y-6" action="#" method="POST" @submit.prevent="onSubmit">
           <div>
             <label for="email" class="block text-sm/6 font-medium text-gray-900">Email <span class="text-sm text-red-500">*</span></label>
             <div class="mt-2">
-              <input v-model="email" type="email" name="email" id="email" autocomplete="email" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+              <el-input v-model="email" type="email" name="email" id="email" autocomplete="email" placeholder="Email" />
               <p class="text-xs text-red-500 mt-1">{{ errors.email }}</p>
             </div>
           </div>
@@ -19,28 +19,29 @@
           <div>
             <label for="password" class="block text-sm/6 font-medium text-gray-900">Mật khẩu <span class="text-sm text-red-500">*</span></label>
             <div class="mt-2">
-              <input type="password" name="password" id="password" autocomplete="password" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" v-model="password" />
+              <el-input type="password" name="password" id="password" autocomplete="password" placeholder="Mật khẩu" v-model="password" show-password />
               <p class="text-xs text-red-500 mt-1">{{ errors.password }}</p>
             </div>
           </div>
 
           <div>
-            <button 
-            type="submit" 
-            class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            >Đăng nhập</button>
+            <el-button type="primary" native-type="submit" class="w-full">
+              Đăng nhập
+            </el-button>
           </div>
 
           <div class="flex items-center justify-between">
             <div class="text-sm">
-              <router-link to="/forgot-password" class="font-semibold text-indigo-600 hover:text-indigo-500">Quên mật khẩu</router-link>
+              <router-link to="/forgot-password" class="text-gray-900 hover:opacity-[0.8]">
+                Quên mật khẩu
+              </router-link>
             </div>
 
             <div class="text-sm">
-              <router-link to="/register" class="font-semibold text-indigo-600 hover:text-indigo-500">Bạn chưa có tài khoản?</router-link>
+              <router-link to="/register" class="text-gray-900 hover:opacity-[0.8]">Bạn chưa có tài khoản?</router-link>
             </div>
           </div>
-        </form>
+        </el-form>
       </div>
     </div>
   </div>
@@ -50,7 +51,6 @@
   import { useRouter } from 'vue-router';
   import { useAuthStore } from '../stores/auth';
   import axios from 'axios';
-  import { ref } from 'vue';
   import { ElMessage } from 'element-plus';
   import * as yup from 'yup';
   import { useForm, useField } from 'vee-validate';
@@ -83,7 +83,6 @@
       
       router.push('/');
     } catch (error) {
-      console.error('Login failed: ', error);
       ElMessage({
         message: error.response.data.message || 'Xảy ra lỗi',
         type: 'error',
