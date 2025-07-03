@@ -48,19 +48,34 @@
             <div class="w-1/2">
               <label for="dateOfBirth" class="block text-sm/6 font-medium text-gray-900">Năm sinh</label>
               <div class="mt-1">
-                <input v-model="dateOfBirth" type="date" name="dateOfBirth" id="dateOfBirth" autocomplete="email" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+                <el-date-picker
+                  v-model="dateOfBirth"
+                  type="date"
+                  placeholder="Ngày sinh"
+                  size="default"
+                />
+                <!-- <input v-model="dateOfBirth" type="date" name="dateOfBirth" id="dateOfBirth" autocomplete="email" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" /> -->
               </div>
             </div>
 
             <div class="w-1/2">
               <label for="gender" class="block text-sm/6 font-medium text-gray-900">Giới tính</label>
               <div class="mt-1">
-                <select v-model="gender" name="gender" id="gender" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                <el-select v-model="gender" placeholder="Giới tính" size="default">
+                  <el-option
+                    v-for="item in genderOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+
+                <!-- <select v-model="gender" name="gender" id="gender" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                   <option value="">----</option>
                   <option value="male">Nam</option>
                   <option value="female">Nữ</option>
                   <option value="other">Khác</option>
-                </select>
+                </select> -->
               </div>
             </div>
           </div>
@@ -97,7 +112,8 @@
   import { useRouter } from 'vue-router';
   import * as yup from 'yup';
   import { useForm, useField } from 'vee-validate';
-  import { ElMessage } from 'element-plus'
+  import { ElMessage } from 'element-plus';
+import { ref } from 'vue';
 
   // định nghĩa schema cho việc validate
   const schema = yup.object({
@@ -119,6 +135,20 @@
   const { value: dateOfBirth } = useField('dateOfBirth');
   const { value: gender } = useField('gender');
   const { value: address } = useField('address');
+  const genderOptions = ref([
+    {
+      label: 'Nam',
+      value: 'male'
+    },
+    {
+      label: 'Nữ',
+      value: 'demale'
+    },
+    {
+      label: 'Khác',
+      value: 'other'
+    }
+  ]);
 
   const router = useRouter();
   const onSubmit = handleSubmit(async (values) => {

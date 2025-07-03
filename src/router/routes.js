@@ -1,33 +1,34 @@
+import { PieChart, Calendar, Stamp, User, Menu } from '@element-plus/icons-vue';
+
 export const routeDefinitions = [
   {
     path: 'dashboard',
     label: 'Báo cáo thông kê',
+    icon: PieChart,
     component: () => import('../views/Dashboard.vue') // Sử dụng import động để lazy load
   },
   {
     path: 'event-category',
     label: 'Danh mục sự kiện',
+    icon: Stamp,
     component: () => import('../views/EventCategory.vue')
   },
   {
     path: 'events',
     label: 'Sự kiện',
+    icon: Calendar,
     component: () => import('../views/Events.vue')
   },
   {
     path: 'user',
     label: 'Người dùng',
+    icon: User,
     component: () => import('../views/Users.vue')
   },
   {
     path: 'departments',
     label: 'Phòng ban',
+    icon: Menu,
     component: () => import('../views/Departments.vue')
-  },
-  {
-    path: 'user/:id',
-    name: 'user-detail',
-    label: 'Thông tin tài khoản',
-    component: () => import('../views/UserDetail.vue')
   }
 ];

@@ -44,17 +44,6 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-
-      <!-- <h1 v-if="auth.user" class="text-xl font-semibold text-gray-800">{{ auth.user.name }}</h1>
-
-      <button 
-        class=""
-        @click="handleLogout"
-        >
-        <el-icon :size="20">
-          <Edit />
-        </el-icon>
-      </button> -->
     </div>
     
   </div>

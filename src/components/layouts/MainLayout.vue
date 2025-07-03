@@ -11,7 +11,7 @@
     <div class="flex flex-1 overflow-hidden">
       <!-- Sidebar -->
       <aside class="w-64 bg-gray-100 px-4 overflow-y-auto">
-        <div class="bg-white h-full rounded-sm shadow">
+        <div class="h-full">
           <Sidebar />
         </div>
       </aside>
