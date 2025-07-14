@@ -17,8 +17,8 @@
       </aside>
 
       <!-- Main Content -->
-      <main class="flex-1 bg-gray-100 overflow-y-auto pr-4">
-        <div class="w-full h-full bg-white p-4 rounded-sm shadow">
+      <main class="flex-1 bg-gray-100 pr-4">
+        <div class="w-full h-full bg-white p-4 rounded-sm shadow overflow-y-auto">
           <router-view />
         </div>
       </main>

@@ -9,9 +9,7 @@ export const useAuthStore = defineStore('auth', {
     isAuthenticated: (state) => !!state.user && !!state.token,
   },
   actions: {
-    login(userData) {
-      console.log({userData});
-      
+    login(userData) {      
       this.user = userData.user;
       this.token = userData.token;
 
@@ -25,6 +23,10 @@ export const useAuthStore = defineStore('auth', {
 
       localStorage.removeItem('user');
       localStorage.removeItem('token');
+    },
+    updateUser(updatedData) {
+      this.user = { ...this.user, ...updatedData };
+      localStorage.setItem('user', JSON.stringify(updatedData));
     }
   }
 });

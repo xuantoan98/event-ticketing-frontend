@@ -102,12 +102,11 @@
 </template>
 
 <script setup>
-  import axios from 'axios';
+  import axios from '../utils/axios';
   import { useRouter } from 'vue-router';
   import * as yup from 'yup';
   import { useForm, useField } from 'vee-validate';
   import { ElMessage } from 'element-plus';
-  import { ref } from 'vue';
   import { useGenderOptionsStore } from '../stores/genderOptions';
 
   const router = useRouter();

@@ -50,7 +50,7 @@
 <script setup>
   import { useRouter } from 'vue-router';
   import { useAuthStore } from '../stores/auth';
-  import axios from 'axios';
+  import axios from '../utils/axios';
   import { ElMessage } from 'element-plus';
   import * as yup from 'yup';
   import { useForm, useField } from 'vee-validate';

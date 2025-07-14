@@ -34,20 +34,22 @@
             </p>
           </div>
         </div>
-        <el-button type="primary" @click="handleIsEdit">
-          {{ isEdit ? 'Lưu thay đổi' : 'Cập nhật thông tin' }}
+        <el-button type="primary" @click="toggleEdit">
+          <el-icon><Edit /></el-icon>
         </el-button>
       </div>
 
-      <el-form class="grid gap-6" @submit.prevent>
+      <el-form class="grid gap-6" action="#" method="POST" @submit.prevent="onSubmit">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label class="block text-sm/6 font-medium text-gray-900">Tên người dùng</label>
             <el-input v-model="name" type="text" placeholder="Tên người dùng" :disabled="!isEdit" />
+            <p v-if="errors.name" class="text-red-500 text-sm">{{ errors.name }}</p>
           </div>
           <div>
             <label class="block text-sm/6 font-medium text-gray-900">Email</label>
             <el-input v-model="email" type="text" placeholder="Email" :disabled="!isEdit" />
+            <p v-if="errors.email" class="text-red-500 text-sm">{{ errors.email }}</p>
           </div>
 
           <!-- Row 2 -->
@@ -78,13 +80,14 @@
             <label for="phone" class="block text-sm/6 font-medium text-gray-900">Số điện thoại <span class="text-sm text-red-500">*</span></label>
             <div class="mt-1">
               <el-input v-model="phone" type="text" name="phone" id="phone" autocomplete="phone" placeholder="Số điện thoại" :disabled="!isEdit" />
+              <p v-if="errors.phone" class="text-red-500 text-sm">{{ errors.phone }}</p>
             </div>
           </div>
 
           <div>
-            <label for="phone" class="block text-sm/6 font-medium text-gray-900">Chức vụ</label>
+            <label for="role" class="block text-sm/6 font-medium text-gray-900">Chức vụ</label>
             <div class="mt-1">
-              <el-input v-model="userRole" type="text" name="phone" id="phone" autocomplete="phone" placeholder="Số điện thoại" disabled />
+              <el-input v-model="userRole" type="text" name="role" id="role" autocomplete="role" placeholder="Chức vụ" disabled />
             </div>
           </div>
         </div>
@@ -93,6 +96,20 @@
           <label for="address" class="block text-sm/6 font-medium text-gray-900">Địa chỉ</label>
           <div class="mt-1">
             <el-input v-model="address" type="text" name="address" id="address" placeholder="Địa chỉ" autocomplete="address" :disabled="!isEdit" />
+          </div>
+        </div>
+
+        <div class="w-full">
+          <div class="mt-1">
+            <el-button 
+              type="primary"
+              native-type="submit"
+              class="w-full"
+              :disabled="!isEdit"
+              :loading="loading"
+            >
+              Lưu thay đổi
+            </el-button>
           </div>
         </div>
       </el-form>
@@ -104,20 +121,32 @@
   import { computed, onMounted, ref } from 'vue';
   import { useAuthStore } from '../stores/auth';
   import { useGenderOptionsStore } from '../stores/genderOptions';
-  import { useField } from 'vee-validate';
+  import { useField, useForm } from 'vee-validate';
+  import * as yup from 'yup';
+  import { ElMessage } from 'element-plus';
+  import axios from '../utils/axios';
+
+  const schema = yup.object({
+    email: yup.string().required('Email là bắt buộc').email('Email không hợp lệ'),
+    name: yup.string().required('Tên người dùng là bắt buộc'),
+    phone: yup.string().required('Số điện thoại là bắt buộc'),
+    dateOfBirth: yup.date().nullable(),
+    gender: yup.string().nullable(),
+    address: yup.string().nullable()
+  });
 
   const auth = useAuthStore();
   const genderOptionsStore = useGenderOptionsStore();
-
   const genderOptions = genderOptionsStore.genderOptions;
+  const { handleSubmit, errors } = useForm({ validationSchema: schema });
   const { value: email } = useField('email');
   const { value: name } = useField('name');
   const { value: phone } = useField('phone');
   const { value: dateOfBirth } = useField('dateOfBirth');
   const { value: gender } = useField('gender');
   const { value: address } = useField('address');
-
   const isEdit = ref(false);
+  const loading = ref(false);
   
   onMounted(() => {
     if (auth.user) {
@@ -143,13 +172,35 @@
     }
   });
 
-  const handleIsEdit = async () => {
-    if (isEdit.value) {
+  const onSubmit = handleSubmit (async (values) => {
+    try {
+      loading.value = true;
       // Call api update user
+      const response = await axios.put(`users/update/${auth.user.id}`, {
+        ...values
+      });
 
-      console.log('call api update user');
+      if (response.status === 200) {
+        auth.updateUser(response.data.data);
+        ElMessage({
+          message: response.data.message || 'Xảy ra lỗi',
+          type: 'success',
+          grouping: true
+        });
+      } else {
+        ElMessage.error('Có lỗi xảy ra!');
+      }
+
+      isEdit.value = false;
+      loading.value = false;
+    } catch (error) {
+      ElMessage({
+        message: error.response.data.message || 'Lỗi cập nhật'
+      });
     }
+  });
 
-    isEdit.value = !isEdit.value;
+  const toggleEdit = () => {
+    isEdit.value = true;
   }
 </script>
