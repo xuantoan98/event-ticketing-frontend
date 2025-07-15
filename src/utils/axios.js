@@ -5,7 +5,7 @@ import { useAuthStore } from "../stores/auth";
 
 const pinia = createPinia();
 const instance = axios.create({
-  baseURL: 'http://localhost:5000/api/'
+  baseURL: 'http://localhost:5000/api'
 });
 
 instance.interceptors.request.use(

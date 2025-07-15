@@ -11,7 +11,7 @@ export const useDepartmentStore = defineStore('department', {
     async fetchDepartments(page = 1, limit = 10, sortOrder = 'desc') {
       try {
         this.loading = true;
-        const response = await axios.get('departments', {
+        const response = await axios.get('/departments', {
           params: { page, limit, sortOrder }
         });
 
@@ -25,7 +25,7 @@ export const useDepartmentStore = defineStore('department', {
     },
     async addDepartment(department) {
       try {
-        const response = await axios.post('departments', department);
+        const response = await axios.post('/departments', department);
         console.log(response);
         
         this.departments.unshift(response.data.data);
@@ -37,7 +37,7 @@ export const useDepartmentStore = defineStore('department', {
     },
     async updateDepartment(id, department) {
       try {
-        const response = await axios.put(`departments/${id}`, department);
+        const response = await axios.put(`/departments/${id}`, department);
         console.log('data update: ', response);
         return response.data.data;
         

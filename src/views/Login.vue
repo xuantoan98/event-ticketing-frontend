@@ -68,7 +68,7 @@
 
   const onSubmit = handleSubmit(async (values) => {
     try {
-      const response = await axios.post('auth/login', values);
+      const response = await axios.post('/auth/login', values);
 
       auth.login({
         user: response.data.data.user,

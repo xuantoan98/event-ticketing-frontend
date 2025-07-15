@@ -136,7 +136,7 @@
   
   const onSubmit = handleSubmit(async (values) => {
     try {
-      const response = await axios.post('users/register', {
+      const response = await axios.post('/users/register', {
         ...values,
         role: 'customer'
       });

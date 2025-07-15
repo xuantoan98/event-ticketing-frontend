@@ -176,7 +176,7 @@
     try {
       loading.value = true;
       // Call api update user
-      const response = await axios.put(`users/update/${auth.user.id}`, {
+      const response = await axios.put(`/users/update/${auth.user.id}`, {
         ...values
       });
 
