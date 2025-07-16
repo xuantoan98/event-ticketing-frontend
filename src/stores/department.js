@@ -8,11 +8,11 @@ export const useDepartmentStore = defineStore('department', {
     loading: false
   }),
   actions: {
-    async fetchDepartments(page = 1, limit = 10, sortOrder = 'desc') {
+    async fetchDepartments(page = 1, limit = 10, sortOrder = 'desc', q = '') {
       try {
         this.loading = true;
         const response = await axios.get('/departments', {
-          params: { page, limit, sortOrder }
+          params: { page, limit, sortOrder, q }
         });
 
         this.departments = response.data.data || [];
@@ -26,8 +26,6 @@ export const useDepartmentStore = defineStore('department', {
     async addDepartment(department) {
       try {
         const response = await axios.post('/departments', department);
-        console.log(response);
-        
         this.departments.unshift(response.data.data);
         return response.data.data;
       } catch (error) {
@@ -38,11 +36,16 @@ export const useDepartmentStore = defineStore('department', {
     async updateDepartment(id, department) {
       try {
         const response = await axios.put(`/departments/${id}`, department);
-        console.log('data update: ', response);
         return response.data.data;
-        
       } catch (error) {
-        console.error('Lỗi khi update department:', error);
+        throw error;
+      }
+    },
+    async deleteDepartment(id) {
+      try {
+        const response = await axios.delete(`/departments/${id}`);
+        return response;
+      } catch (error) {
         throw error;
       }
     }

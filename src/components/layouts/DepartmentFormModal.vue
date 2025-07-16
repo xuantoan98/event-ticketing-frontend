@@ -3,10 +3,10 @@
     :model-value="visible"
     @update:modelValue="(val) => emit('update:visible', val)"
     :title="isEdit ? 'Cập nhật phòng ban' : 'Thêm phòng ban'"
-    width="80%"
+    width="70%"
     @close="handleClose"
   >
-    <el-form :model="form" :rules="rules" ref="formRef" label-width="120px">
+    <el-form :model="form" :rules="rules" ref="formRef" label-width="auto" label-position="top">
       <el-form-item label="Tên phòng ban" prop="name">
         <el-input v-model="form.name" />
       </el-form-item>
@@ -15,6 +15,12 @@
       </el-form-item>
       <el-form-item label="Số điện thoại" prop="phone">
         <el-input v-model="form.phone" />
+      </el-form-item>
+      <el-form-item label="Trạng thái" prop="status">
+        <el-select v-model="form.status" placeholder="Trạng thái">
+          <el-option label="Hoạt động" :value="1" />
+          <el-option label="Ngưng hoạt động" :value="0" />
+        </el-select>
       </el-form-item>
       <el-form-item label="Mô tả">
         <el-input type="textarea" v-model="form.description" />
@@ -48,7 +54,8 @@
     name: '',
     email: '',
     phone: '',
-    description: ''
+    description: '',
+    status: ''
   });
 
   const rules = {
@@ -76,7 +83,8 @@
       name: '',
       email: '',
       phone: '',
-      description: ''
+      description: '',
+      status: ''
     });
   }
 
@@ -106,3 +114,9 @@
     });
   }
 </script>
+
+<style>
+  .el-dialog {
+    padding: 24px;
+  }
+</style>
