@@ -11,7 +11,7 @@ export const routeDefinitions = [
     path: 'event-category',
     label: 'Danh mục sự kiện',
     icon: Stamp,
-    component: () => import('../views/EventCategory.vue')
+    component: () => import('../views/event-categories/EventCategories.vue')
   },
   {
     path: 'events',

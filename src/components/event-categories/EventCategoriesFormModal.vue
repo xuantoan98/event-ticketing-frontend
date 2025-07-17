@@ -2,22 +2,16 @@
   <el-dialog
     :model-value="visible"
     @update:modelValue="(val) => emit('update:visible', val)"
-    :title="isEdit ? 'Cập nhật phòng ban' : 'Thêm phòng ban'"
+    :title="isEdit ? 'Cập nhật danh mục' : 'Thêm danh mục'"
     width="70%"
     @close="handleClose"
   >
     <el-form :model="form" :rules="rules" ref="formRef" label-width="auto" label-position="top">
-      <el-form-item label="Tên phòng ban" prop="name">
+      <el-form-item label="Tên danh mục" prop="name">
         <el-input v-model="form.name" />
       </el-form-item>
-      <el-form-item label="Email" prop="email">
-        <el-input v-model="form.email" />
-      </el-form-item>
-      <el-form-item label="Số điện thoại" prop="phone">
-        <el-input v-model="form.phone" />
-      </el-form-item>
       <el-form-item label="Trạng thái" prop="status">
-        <el-select v-model="form.status" placeholder="Trạng thái">
+        <el-select v-model="form.status" placeholder="Trạng thái" :key="form.status">
           <el-option label="Hoạt động" :value="1" />
           <el-option label="Ngưng hoạt động" :value="0" />
         </el-select>
@@ -39,12 +33,12 @@
 <script setup>
   import { ref, watch, reactive } from 'vue';
   import { ElMessage } from 'element-plus';
-  import { useDepartmentStore } from '../../stores/department';
+  import { useEventCategoriesStore } from '../../stores/eventCategories';
 
-  const departmentStore = useDepartmentStore();
+  const eventCategoriesStore = useEventCategoriesStore();
   const props = defineProps({
     visible: Boolean,
-    department: Object
+    eventCategory: Object
   });
 
   const emit = defineEmits(['update:visible', 'refresh']);
@@ -52,37 +46,19 @@
   const formRef = ref();
   const form = reactive({
     name: '',
-    email: '',
-    phone: '',
     description: '',
     status: 1
   });
 
   const rules = {
-    name: [{ required: true, message: 'Tên phòng ban là bắt buộc', trigger: 'blur' }],
-    email: [
-      { required: true, message: 'Email là bắt buộc', trigger: 'blur' },
-      { type: 'email', message: 'Email không hợp lệ', trigger: 'blur' }
-    ]
+    name: [{ required: true, message: 'Tên danh mục là bắt buộc', trigger: 'blur' }]
   };
-
-  // Nếu props.department thay đổi (tức là đang chỉnh sửa)
-  watch(() => props.visible, (val) => {
-    if (val && props.department) {
-      isEdit.value = true;
-      Object.assign(form, props.department);
-    } else {
-      resetForm();
-    }
-  });
 
   function resetForm() {
     isEdit.value = false;
     formRef.value?.resetFields();
     Object.assign(form, {
       name: '',
-      email: '',
-      phone: '',
       description: '',
       status: ''
     });
@@ -95,14 +71,16 @@
 
   function submitForm() {
     formRef.value.validate(async (valid) => {
-      if (!valid) return;
+      if (!valid) {
+        return;
+      }
 
       try {
-        if (isEdit.value && props.department?._id) {
-          await departmentStore.updateDepartment(props.department._id, { ...form });
+        if (isEdit.value && props.eventCategory?._id) {
+          await eventCategoriesStore.updateEventCategory(props.eventCategory._id, { ...form });
           ElMessage.success('Cập nhật thành công');
         } else {
-          await departmentStore.addDepartment({ ...form });
+          await eventCategoriesStore.addEventCategory({ ...form });
           ElMessage.success('Thêm mới thành công');
         }
 
@@ -113,10 +91,17 @@
       }
     });
   }
-</script>
 
-<style>
-  .el-dialog {
-    padding: 24px;
-  }
-</style>
+  // Nếu props.eventCategory thay đổi -> đang sửa danh mục
+  watch(
+    () => props.visible,
+    (val) => {
+      if (val && props.eventCategory) {
+        isEdit.value = true;
+        Object.assign(form, props.eventCategory);
+      } else {
+        resetForm();
+      }
+    }
+  );
+</script>

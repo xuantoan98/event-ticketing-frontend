@@ -1,13 +1,13 @@
 <template>
   <div class="flex items-center justify-between">
-    <h2>Danh sách phòng ban</h2>
+    <h2>Các danh mục sự kiện</h2>
 
     <div class="flex items-center gap-x-4">
       <el-input
         v-model="searchQuery"
         placeholder="Tìm kiếm..."
         :suffix-icon="Search"
-        @input="handleSearchDepartment"
+        @input="handleSearchEventCategory"
       />
       <el-button type="primary" @click="openAddModal">
         <el-icon class="mr-1"><Plus /></el-icon>
@@ -17,10 +17,8 @@
   </div>
 
   <div>
-    <el-table :data="departmentStore.departments" v-loading="departmentStore.loading">
-      <el-table-column prop="name" label="Tên phòng ban" />
-      <el-table-column prop="email" label="Email" />
-      <el-table-column prop="phone" label="SĐT" />
+    <el-table :data="eventCategoriesStore.eventCategories" v-loading="eventCategoriesStore.loading">
+      <el-table-column prop="name" label="Tên danh mục" />
       <el-table-column prop="description" label="Mô tả" />
       <el-table-column label="Trạng thái">
         <template #default="{ row }">
@@ -31,18 +29,18 @@
       </el-table-column>
       <el-table-column label="Hành động">
         <template #default="{ row }">
-          <el-button type="primary" size="small" @click="openEditModal(row)">Sửa</el-button>
+          <el-button type="warning" size="small" @click="openEditModal(row)">Sửa</el-button>
           <el-button 
             type="danger" 
             size="small" 
-            @click="deleteDepartment(row._id)"
+            @click="deleteEventCategory(row._id)"
             :loading="deletingId === row._id"
           >Xóa</el-button>
         </template>
       </el-table-column>
       <template #empty>
         <div class="text-gray-500 text-sm italic text-center py-6">
-          Dữ liệu phòng ban trống.
+          Dữ liệu danh mục trống.
         </div>
       </template>
     </el-table>
@@ -51,63 +49,60 @@
       <el-pagination
         v-model:current-page="currentPage"
         :page-size="pageSize"
-        :total="departmentStore.total"
+        :total="eventCategoriesStore.total"
         layout="prev, pager, next"
       />
     </div>
   </div>
 
-  <DepartmentFormModal
+  <EventCategoriesFormModal 
     v-model:visible="showModal"
-    :department="editingDepartment"
-    @refresh="fetchDepartments"
+    :eventCategory="editingEventCategory"
+    @refresh="fetchEventCategories"
   />
+
 </template>
 
 <script setup>
   import { onMounted, ref, watch } from 'vue';
-  import { useDepartmentStore } from '../stores/department';
-  import DepartmentFormModal from '../components/layouts/DepartmentFormModal.vue';
-  import { Search } from '@element-plus/icons-vue';
+  import { useEventCategoriesStore } from '../../stores/eventCategories';
   import { debounce } from 'lodash';
+  import { Search } from '@element-plus/icons-vue';
+  import EventCategoriesFormModal from '../../components/event-categories/EventCategoriesFormModal.vue';
   import { ElMessage, ElMessageBox } from 'element-plus';
 
-  const departmentStore = useDepartmentStore();
+  const eventCategoriesStore = useEventCategoriesStore();
 
   const currentPage = ref(1);
   const pageSize = 10;
-  const showModal = ref(false);
-  const editingDepartment = ref(null);
   const searchQuery = ref('');
   const deletingId = ref(null);
+  const showModal = ref(false);
+  const editingEventCategory = ref(null);
 
-  watch(currentPage, (page) => {
-    departmentStore.fetchDepartments(page, pageSize);
-  });
-
-  onMounted(() => {
-    departmentStore.fetchDepartments(currentPage.value, pageSize);
-  });
-
-  const formatDate = (date) => new Date(date).toLocaleDateString('vi-VN');
-
-  const fetchDepartments = async () => {
-    await departmentStore.fetchDepartments();
+  const fetchEventCategories = async () => {
+    await eventCategoriesStore.fetchEventCategories();
   }
 
-  function openAddModal() {
-    editingDepartment.value = null; // tạo mới
+  const handleSearchEventCategory = debounce(fetchSearchResult, 500);
+
+  async function fetchSearchResult() {
+    await eventCategoriesStore.fetchEventCategories(1, 10, 'desc', searchQuery.value.trim());
+  }
+
+  function openAddModal () {
+    editingEventCategory.value = null; // tạo mới
     showModal.value = true;
   }
 
-  function openEditModal(department) {
-    editingDepartment.value = { ...department };
+  function openEditModal(eventCategory) {
+    editingEventCategory.value = {...eventCategory}; // cập nhật
     showModal.value = true;
   }
 
-  const deleteDepartment = async (id) => {
+  async function deleteEventCategory(id) {
     await ElMessageBox.confirm(
-      'Bạn có chắc chắn muốn dừng hoạt động phòng ban này?',
+      'Bạn có chắc chắn muốn dừng hoạt động danh mục này?',
       'Xác nhận',
       {
         confirmButtonText: 'Dừng',
@@ -117,20 +112,22 @@
     );
 
     deletingId.value = id;
-    const result = await departmentStore.deleteDepartment(id);
+    const result = await eventCategoriesStore.deleteEventCategory(id);    
     deletingId.value = null;
 
     if (result.status === 200) {
       ElMessage.success('Thay đổi trạng thái thành công');
-      await departmentStore.fetchDepartments();
+      await eventCategoriesStore.fetchEventCategories();
     } else {
       ElMessage.error('Thay đổi trạng thái thất bại');
     }
   }
 
-  async function fetchSearchResult() {
-    await departmentStore.fetchDepartments(1, 10, 'desc', searchQuery.value);
-  }
+  watch(currentPage, (page) => {
+    eventCategoriesStore.fetchEventCategories(page, pageSize);
+  });
 
-  const handleSearchDepartment = debounce(fetchSearchResult, 500);
+  onMounted(() => {
+    eventCategoriesStore.fetchEventCategories(currentPage.value, pageSize);
+  });
 </script>
