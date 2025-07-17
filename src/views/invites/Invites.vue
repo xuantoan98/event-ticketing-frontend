@@ -1,0 +1,107 @@
+<template>
+  <div class="flex items-center justify-between">
+    <h2>Danh sách khách mời</h2>
+
+    <div class="flex items-center gap-x-4">
+      <el-input
+        v-model="searchQuery"
+        placeholder="Tìm kiếm..."
+        :suffix-icon="Search"
+        @input="handleSearchInvite"
+      />
+      <el-button type="primary" @click="openAddModal">
+        <el-icon class="mr-1"><Plus /></el-icon>
+        Thêm mới
+      </el-button>
+    </div>
+  </div>
+
+  <div>
+    <el-table :data="inviteStore.invites" v-loading="inviteStore.loading">
+      <el-table-column prop="name" label="Tên khách mời" />
+      <el-table-column prop="email" label="Email" />
+      <el-table-column prop="phone" label="Số điện thoại" />
+      <el-table-column prop="fax" label="Số fax" />
+      <el-table-column prop="organization" label="Cơ quan" />
+      <!-- <el-table-column prop="description" label="Mô tả" /> -->
+      <el-table-column label="Trạng thái">
+        <template #default="{ row }">
+          <el-tag :type="row.status === 1 ? 'success' : 'danger'" effect="plain">
+            {{ row.status === 1 ? 'Hoạt động' : 'Ngừng hoạt động' }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="Hành động">
+        <!-- <template #default="{ row }">
+          <el-button type="warning" size="small" @click="openEditModal(row)">Sửa</el-button>
+          <el-button 
+            type="danger" 
+            size="small" 
+            @click="deleteEventCategory(row._id)"
+            :loading="deletingId === row._id"
+          >Xóa</el-button>
+        </template> -->
+      </el-table-column>
+      <template #empty>
+        <div class="text-gray-500 text-sm italic text-center py-6">
+          Dữ liệu khách mời trống.
+        </div>
+      </template>
+    </el-table>
+
+    <div class="mt-4 text-right">
+      <el-pagination
+        v-model:current-page="currentPage"
+        :page-size="pageSize"
+        :total="inviteStore.total"
+        layout="prev, pager, next"
+      />
+    </div>
+  </div>
+
+  <InviteFormModal 
+    v-model:visible="showModal"
+    :inviteData="editingInvite"
+    @refresh="fetchInvites"
+  />
+</template>
+
+<script setup>
+  import { onMounted, ref, watch } from 'vue';
+  import { useInviteStore } from '../../stores/invite';
+  import { Search } from '@element-plus/icons-vue';
+  import { debounce } from 'lodash';
+  import InviteFormModal from '../../components/invites/InviteFormModal.vue';
+  import { DEFAULT_PAGE, PAGE_SIZE } from '../../constants';
+
+  const inviteStore = useInviteStore();
+
+  const searchQuery = ref('');
+  const showModal = ref(false);
+  const editingInvite = ref(null);
+  const currentPage = ref(DEFAULT_PAGE);
+  const pageSize = ref(PAGE_SIZE);
+
+  async function handleSearchResult() {
+    console.log('search ...');
+  }
+
+  function openAddModal() {
+    editingInvite.value = null;
+    showModal.value = true;
+  }
+
+  const handleSearchInvite = debounce(handleSearchResult, 500);
+
+  const fetchInvites = async () => {
+    await inviteStore.getInvites();
+  }
+
+  watch(currentPage, (page) => {
+    inviteStore.getInvites(page, PAGE_SIZE);
+  });
+
+  onMounted(() => {
+    inviteStore.getInvites(currentPage.value, PAGE_SIZE);
+  });
+</script>

@@ -30,5 +30,11 @@ export const routeDefinitions = [
     label: 'Phòng ban',
     icon: Menu,
     component: () => import('../views/Departments.vue')
+  },
+  {
+    path: 'invites',
+    label: 'Khách mời',
+    icon: User,
+    component: () => import('../views/invites/Invites.vue')
   }
 ];
