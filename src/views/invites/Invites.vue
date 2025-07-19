@@ -32,15 +32,15 @@
         </template>
       </el-table-column>
       <el-table-column label="Hành động">
-        <!-- <template #default="{ row }">
+        <template #default="{ row }">
           <el-button type="warning" size="small" @click="openEditModal(row)">Sửa</el-button>
           <el-button 
             type="danger" 
             size="small" 
-            @click="deleteEventCategory(row._id)"
+            @click="deleteInvite(row._id)"
             :loading="deletingId === row._id"
           >Xóa</el-button>
-        </template> -->
+        </template>
       </el-table-column>
       <template #empty>
         <div class="text-gray-500 text-sm italic text-center py-6">
@@ -72,7 +72,8 @@
   import { Search } from '@element-plus/icons-vue';
   import { debounce } from 'lodash';
   import InviteFormModal from '../../components/invites/InviteFormModal.vue';
-  import { DEFAULT_PAGE, PAGE_SIZE } from '../../constants';
+  import { DEFAULT_PAGE, DEFAULT_SORT, PAGE_SIZE } from '../../constants';
+  import { ElMessage, ElMessageBox } from 'element-plus';
 
   const inviteStore = useInviteStore();
 
@@ -81,17 +82,51 @@
   const editingInvite = ref(null);
   const currentPage = ref(DEFAULT_PAGE);
   const pageSize = ref(PAGE_SIZE);
+  const deletingId = ref(null);
 
   async function handleSearchResult() {
-    console.log('search ...');
+    if (searchQuery.value.trim()) {
+      await inviteStore.getInvites(currentPage.value, PAGE_SIZE, DEFAULT_SORT.order, searchQuery.value.trim());
+    } else {
+      // If search query is empty, fetch all invites
+      fetchInvites();
+    }
   }
+
+  const handleSearchInvite = debounce(handleSearchResult, 500);
 
   function openAddModal() {
     editingInvite.value = null;
     showModal.value = true;
   }
 
-  const handleSearchInvite = debounce(handleSearchResult, 500);
+  function openEditModal(invite) {    
+    editingInvite.value = invite;
+    showModal.value = true;
+  }
+
+  async function deleteInvite(inviteId) {
+    await ElMessageBox.confirm(
+      'Bạn có chắc chắn muốn dừng hoạt động khách mời này?',
+      'Xác nhận',
+      {
+        confirmButtonText: 'Dừng',
+        cancelButtonText: 'Hủy',
+        type: 'warning'
+      }
+    );
+
+    deletingId.value = inviteId;
+    const result = await inviteStore.deleteInvite(inviteId);
+    deletingId.value = null;
+
+    if (result.status === 200) {
+      ElMessage.success('Thay đổi trạng thái khách mời thành công.');
+      fetchInvites();
+    } else {
+      ElMessage.error('Thất bại khách mời thất bại. Vui lòng thử lại sau.');
+    }
+  }
 
   const fetchInvites = async () => {
     await inviteStore.getInvites();

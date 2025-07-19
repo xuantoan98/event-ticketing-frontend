@@ -7,28 +7,35 @@
     @close="handleClose"
   >
     <el-form :model="form" :rules="rules" ref="formRef" label-width="auto" label-position="top">
-      <el-form-item label="Tên khách mời" prop="name">
-        <el-input v-model="form.name" />
-      </el-form-item>
-      <el-form-item label="Email" prop="email">
-        <el-input v-model="form.email" />
-      </el-form-item>
-      <el-form-item label="Số điện thoại" prop="phone">
-        <el-input v-model="form.phone" />
-      </el-form-item>
-      <el-form-item label="Fax" prop="fax">
-        <el-input v-model="form.fax" />
-      </el-form-item>
-      <el-form-item label="Cơ quan" prop="organization">
-        <el-input v-model="form.organization" />
-      </el-form-item>
-      <!-- <el-form-item label="Trạng thái" prop="status">
-        <el-select v-model="form.status" placeholder="Trạng thái" :key="form.status">
-          <el-option label="Hoạt động" :value="1" />
-          <el-option label="Ngưng hoạt động" :value="0" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="Mô tả">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <el-form-item label="Tên khách mời" prop="name">
+          <el-input v-model="form.name" />
+        </el-form-item>
+        <el-form-item label="Email" prop="email">
+          <el-input v-model="form.email" />
+        </el-form-item>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <el-form-item label="Số điện thoại" prop="phone">
+          <el-input v-model="form.phone" />
+        </el-form-item>
+        <el-form-item label="Fax" prop="fax">
+          <el-input v-model="form.fax" />
+        </el-form-item>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <el-form-item label="Cơ quan" prop="organization">
+          <el-input v-model="form.organization" />
+        </el-form-item>
+        <el-form-item label="Trạng thái" prop="status">
+          <el-select v-model="form.status" placeholder="Trạng thái" :key="form.status">
+            <el-option label="Hoạt động" :value="1" />
+            <el-option label="Ngưng hoạt động" :value="0" />
+          </el-select>
+        </el-form-item>
+      </div>
+      <!-- <el-form-item label="Mô tả">
         <el-input type="textarea" v-model="form.description" />
       </el-form-item> -->
     </el-form>
@@ -43,7 +50,7 @@
 </template>
 
 <script setup>
-  import { reactive, ref } from 'vue';
+  import { reactive, ref, watch } from 'vue';
   import { useInviteStore } from '../../stores/invite';
   import { ElMessage } from 'element-plus';
 
@@ -114,4 +121,17 @@
       organization: ''
     });
   }
+
+  // Lắng nghe sự tay đổi của props.visible để xác định xem có đang chỉnh sửa hay thêm mới
+  watch(
+    () => props.visible,
+    (val) => {
+      if (val && props.inviteData) {
+        isEdit.value = true;
+        Object.assign(form, props.inviteData);
+      } else {
+        resetForm();
+      }
+    }
+  );
 </script>
