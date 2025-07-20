@@ -23,7 +23,7 @@ export const routeDefinitions = [
     path: 'user',
     label: 'Người dùng',
     icon: User,
-    component: () => import('../views/Users.vue')
+    component: () => import('../views/users/Users.vue')
   },
   {
     path: 'departments',

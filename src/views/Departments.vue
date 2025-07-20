@@ -89,8 +89,6 @@
     departmentStore.fetchDepartments(currentPage.value, pageSize);
   });
 
-  const formatDate = (date) => new Date(date).toLocaleDateString('vi-VN');
-
   const fetchDepartments = async () => {
     await departmentStore.fetchDepartments();
   }

@@ -2,7 +2,7 @@
   <div>
     <!-- banner user -->
     <div class="block w-full h-[100px]">
-      <img class="w-full h-full object-cover block rounded-t-sm" src="../assets/user-banner.jpg" alt="">
+      <img class="w-full h-full object-cover block rounded-t-sm" src="../../assets/user-banner.jpg" alt="">
     </div>
 
     <!-- info user -->
@@ -119,12 +119,12 @@
 
 <script setup>
   import { computed, onMounted, ref } from 'vue';
-  import { useAuthStore } from '../stores/auth';
-  import { useGenderOptionsStore } from '../stores/genderOptions';
+  import { useAuthStore } from '../../stores/auth';
+  import { useGenderOptionsStore } from '../../stores/genderOptions';
   import { useField, useForm } from 'vee-validate';
   import * as yup from 'yup';
   import { ElMessage } from 'element-plus';
-  import axios from '../utils/axios';
+  import axios from '../../utils/axios';
 
   const schema = yup.object({
     email: yup.string().required('Email là bắt buộc').email('Email không hợp lệ'),

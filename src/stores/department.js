@@ -17,6 +17,7 @@ export const useDepartmentStore = defineStore('department', {
 
         this.departments = response.data.data || [];
         this.total = response.data.meta.total || 0;
+        return this.departments;
       } catch (error) {
         console.error('Lỗi khi load departments:', error);
       } finally {

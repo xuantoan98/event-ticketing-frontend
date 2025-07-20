@@ -25,7 +25,7 @@ const routes = [
         path: 'user/:id',
         name: 'user-detail',
         label: 'Thông tin tài khoản',
-        component: () => import('../views/UserDetail.vue')
+        component: () => import('../views/users/UserDetail.vue')
       },
       ...routeDefinitions
     ]
