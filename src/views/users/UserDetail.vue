@@ -100,11 +100,11 @@
         </div>
 
         <div class="w-full">
-          <div class="mt-1">
+          <div class="mt-1 text-right">
             <el-button 
               type="primary"
               native-type="submit"
-              class="w-full"
+              class=""
               :disabled="!isEdit"
               :loading="loading"
             >
@@ -176,7 +176,7 @@
     try {
       loading.value = true;
       // Call api update user
-      const response = await axios.put(`/users/update/${auth.user.id}`, {
+      const response = await axios.put(`/users/${auth.user.id}`, {
         ...values
       });
 

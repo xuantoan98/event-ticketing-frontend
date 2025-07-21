@@ -7,8 +7,8 @@
     >
       <router-link
         :to="item.path" 
-        class="block px-4 py-2 rounded-sm hover:bg-gray-200 flex items-center gap-3"
-        active-class="bg-gray-200 font-semibold"
+        class="block px-4 py-2 rounded-sm hover:bg-white flex items-center gap-3"
+        active-class="bg-white font-semibold"
       >
         <el-icon>
           <component :is="item.icon" />

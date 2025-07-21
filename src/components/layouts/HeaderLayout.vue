@@ -4,8 +4,8 @@
       <img src="../../assets/logo-cs.png" alt="Logo" class="w-full h-full object-cover">
     </div>
 
-    <div class="border border-[lightgray] bg-[#EFF0F6] rounded-sm py-2 px-4 flex items-center justify-center">
-      <el-dropdown trigger="click">
+    <!-- <div class="border border-[lightgray] bg-[#EFF0F6] rounded-sm py-2 px-4 flex items-center justify-center"> -->
+      <el-dropdown placement="bottom">
         <span class="el-dropdown-link flex items-center justify-center gap-x-2 text-[#191919]">
           <img v-if="auth.user && auth.user.avatar" :src="auth.user.avatar" alt="#" class="block w-[25px] h-[25px] rounded-full object-cover">
           <img v-else src="../../assets/vue.svg" alt="#" class="block w-[25px] h-[25px] rounded-full object-cover">
@@ -44,7 +44,7 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-    </div>
+    <!-- </div> -->
     
   </div>
 </template>
