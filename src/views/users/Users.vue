@@ -4,8 +4,10 @@
 
     <div class="flex items-center gap-x-4">
       <el-input
+        v-model="searchQuery"
         placeholder="Tìm kiếm..."
         :suffix-icon="Search"
+        @input="handleSearchUsers"
       />
       <el-button type="primary" @click="openAddModal">
         <el-icon class="mr-1"><Plus /></el-icon>
@@ -63,15 +65,15 @@
         </template>
       </el-table-column>
       <el-table-column label="Hành động">
-        <!-- <template #default="{ row }">
+        <template #default="{ row }">
           <el-button type="warning" size="small" @click="openEditModal(row)">Sửa</el-button>
           <el-button 
             type="danger" 
             size="small" 
-            @click="deleteInvite(row._id)"
+            @click="deleteUser(row._id)"
             :loading="deletingId === row._id"
           >Xóa</el-button>
-        </template> -->
+        </template>
       </el-table-column>
       <template #empty>
         <div class="text-gray-500 text-sm italic text-center py-6">
@@ -93,7 +95,7 @@
 
   <UserFormModal
     v-model:visible="showModal"
-    :department="editingUser"
+    :userData="editingUser"
     @refresh="fetchUsers"
   />
 </template>
@@ -101,16 +103,20 @@
 <script setup>
   import { onMounted, ref, watch } from 'vue';
   import { useUserStore } from '../../stores/user';
-  import { DEFAULT_PAGE, PAGE_SIZE } from '../../constants';
+  import { DEFAULT_PAGE, DEFAULT_SORT, PAGE_SIZE } from '../../constants';
   import { Search } from '@element-plus/icons-vue';
   import { formatRole } from '../../utils/formatter';
   import UserFormModal from '../../components/users/UserFormModal.vue';
+  import { debounce } from 'lodash';
+  import { ElMessage, ElMessageBox } from 'element-plus';
 
   const userStore = useUserStore();
   const currentPage = ref(DEFAULT_PAGE);
   const pageSize = ref(PAGE_SIZE);
   const showModal = ref(false);
   const editingUser = ref(null);
+  const searchQuery = ref('');
+  const deletingId = ref(null);
 
   onMounted(() => {
     userStore.fetchUsers(currentPage.value, PAGE_SIZE);
@@ -120,6 +126,16 @@
     userStore.fetchUsers(page, PAGE_SIZE)
   });
 
+  async function handleSearchResult() {
+    if (searchQuery.value.trim()) {
+      await userStore.fetchUsers(currentPage.value, PAGE_SIZE, DEFAULT_SORT.order, searchQuery.value.trim());
+    } else {
+      fetchUsers();
+    }
+  }
+
+  const handleSearchUsers = debounce(handleSearchResult, 500);
+
   async function fetchUsers() {
     await userStore.fetchUsers();
   }
@@ -127,5 +143,33 @@
   function openAddModal() {
     showModal.value = true;
     editingUser.value = null;
+  }
+
+  function openEditModal(user) {
+    editingUser.value = { ...user };
+    showModal.value = true;
+  }
+
+  async function deleteUser(userId) {
+    await ElMessageBox.confirm(
+      'Bạn có chắc chắn muốn dừng hoạt động người dùng này?',
+      'Xác nhận',
+      {
+        confirmButtonText: 'Dừng',
+        cancelButtonText: 'Hủy',
+        type: 'warning'
+      }
+    );
+
+    deletingId.value = userId;
+    const result = await userStore.deleteUser(userId);
+    deletingId.value = null;
+    
+    if (result.status === 200) {
+      ElMessage.success('Thay đổi trạng thái người dùng thành công.');
+      fetchUsers();
+    } else {
+      ElMessage.error('Thay đổi trạng thái người dùng thất bại. Vui lòng thử lại sau.');
+    }
   }
 </script>

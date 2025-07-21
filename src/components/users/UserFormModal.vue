@@ -9,16 +9,16 @@
     <el-form :model="form" :rules="rules" ref="formRef" label-width="auto" label-position="top">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <el-form-item label="Họ và tên" prop="name">
-          <el-input v-model="form.name" />
+          <el-input v-model="form.name" placeholder="Họ và tên" />
         </el-form-item>
         <el-form-item label="Email" prop="email">
-          <el-input v-model="form.email" />
+          <el-input v-model="form.email" placeholder="Email" />
         </el-form-item>
       </div>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <el-form-item label="Số điện thoại" prop="phone">
-          <el-input v-model="form.phone" />
+          <el-input v-model="form.phone" placeholder="Số điện thoại"/>
         </el-form-item>
         <el-form-item label="Ngày sinh" prop="dateOfBirth">
           <el-date-picker
@@ -69,7 +69,7 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 justify-items-center items-center w-full mb-[18px] rounded-sm border border-dashed py-4">
         <div 
-          class="flex items-center justify-center w-full h-full  cursor-pointer group"
+          class="flex items-center justify-center w-full h-full cursor-pointer group"
           @click="triggerFileSelect"
           >
           <div class="flex flex-col items-center justify-center gap-4">
@@ -242,28 +242,24 @@
     if (!file) return;
 
     avatarFile.value = file
-    avatarPreviewUrl.value = URL.createObjectURL(file)
-
-    return;
-    const formData = new FormData();
-    formData.append('avatar', file);
-
-    try {
-      const response = await axios.post('/upload-file', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-
-      if (response.status === 200) {        
-        avatarUrl.value = response.data.data.path || '';
-        form.avatar = response.data.data.path; // Cập nhật đường dẫn ảnh vào form
-        ElMessage.success('Tải ảnh lên thành công');
-      } else {
-        ElMessage.error('Tải ảnh lên thất bại. Vui lòng thử lại sau.');
-      }
-    } catch (error) {
-      console.error('Lỗi khi tải ảnh lên:', error);
-    }
+    avatarPreviewUrl.value = URL.createObjectURL(file);
   }
+
+  watch(
+    () => props.visible,
+    (val) => {
+      if (val && props.userData) {
+        isEdit.value = true;
+        Object.assign(form, props.userData);
+
+        avatarFile.value = null; // reset file
+        avatarPreviewUrl.value = props.userData.avatar || null;
+      } else {
+        isEdit.value = false;
+        resetForm();
+      }
+    }
+  );
 
   onMounted(async () => {
     const resultDepartments = await departmentStore.fetchDepartments();

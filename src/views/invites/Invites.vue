@@ -124,7 +124,7 @@
       ElMessage.success('Thay đổi trạng thái khách mời thành công.');
       fetchInvites();
     } else {
-      ElMessage.error('Thất bại khách mời thất bại. Vui lòng thử lại sau.');
+      ElMessage.error('Thay đổi trạng thái khách mời thất bại. Vui lòng thử lại sau.');
     }
   }
 
