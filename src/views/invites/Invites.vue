@@ -19,10 +19,10 @@
   <div>
     <el-table :data="inviteStore.invites" v-loading="inviteStore.loading">
       <el-table-column prop="name" label="Tên khách mời" />
-      <el-table-column prop="email" label="Email" />
+      <el-table-column prop="email" label="Email" show-overflow-tooltip />
       <el-table-column prop="phone" label="Số điện thoại" />
-      <el-table-column prop="fax" label="Số fax" />
-      <el-table-column prop="organization" label="Cơ quan" />
+      <!-- <el-table-column prop="fax" label="Số fax" /> -->
+      <el-table-column prop="organization" label="Cơ quan" show-overflow-tooltip />
       <!-- <el-table-column prop="description" label="Mô tả" /> -->
       <el-table-column label="Trạng thái">
         <template #default="{ row }">

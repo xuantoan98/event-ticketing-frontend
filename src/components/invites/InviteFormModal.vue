@@ -9,24 +9,24 @@
     <el-form :model="form" :rules="rules" ref="formRef" label-width="auto" label-position="top">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <el-form-item label="Tên khách mời" prop="name">
-          <el-input v-model="form.name" />
+          <el-input v-model="form.name" placeholder="Tên khách mời" />
         </el-form-item>
         <el-form-item label="Email" prop="email">
-          <el-input v-model="form.email" />
+          <el-input v-model="form.email" placeholder="Email" />
         </el-form-item>
       </div>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <el-form-item label="Số điện thoại" prop="phone">
-          <el-input v-model="form.phone" />
+          <el-input v-model="form.phone" placeholder="Số điện thoại" />
         </el-form-item>
         <el-form-item label="Fax" prop="fax">
-          <el-input v-model="form.fax" />
+          <el-input v-model="form.fax" placeholder="Số fax" />
         </el-form-item>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <el-form-item label="Cơ quan" prop="organization">
-          <el-input v-model="form.organization" />
+          <el-input v-model="form.organization" placeholder="Cơ quan" />
         </el-form-item>
         <el-form-item label="Trạng thái" prop="status">
           <el-select v-model="form.status" placeholder="Trạng thái" :key="form.status">
@@ -73,7 +73,8 @@
     email: '',
     phone: '',
     fax: '',
-    organization: ''
+    organization: '',
+    status: 1
   });
 
   const rules = {
