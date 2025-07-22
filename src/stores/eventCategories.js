@@ -17,6 +17,8 @@ export const useEventCategoriesStore = defineStore('event-categories', {
 
         this.eventCategories = response.data.data || [];
         this.total = response.data.meta.total;
+
+        return this.eventCategories;
       } catch (error) {
         console.error('Lỗi khi load event categories:', error);
       } finally {

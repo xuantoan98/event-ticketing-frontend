@@ -17,7 +17,7 @@ export const routeDefinitions = [
     path: 'events',
     label: 'Sự kiện',
     icon: Calendar,
-    component: () => import('../views/Events.vue')
+    component: () => import('../views/events/Events.vue')
   },
   {
     path: 'user',
