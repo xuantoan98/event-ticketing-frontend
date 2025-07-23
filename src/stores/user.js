@@ -9,7 +9,7 @@ export const useUserStore = defineStore('user', {
     loading: false
   }),
   actions: {
-    async fetchUsers(page = DEFAULT_PAGE, limit = LIMIT, sortOrder = 'desc', q = '') {
+    async fetchPaginationUsers(page = DEFAULT_PAGE, limit = LIMIT, sortOrder = 'desc', q = '') {
       try {
         this.loading = true;
         const response = await axios.get('/users', {
@@ -18,6 +18,23 @@ export const useUserStore = defineStore('user', {
 
         this.users = response.data.data || [];
         this.total = response.data.meta?.total || 0;
+
+        return this.users;
+      } catch (error) {
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
+    async fetchUsers() {
+      try {
+        this.loading = true;
+        const response = await axios.get('/users');
+
+        this.users = response.data.data || [];
+        this.total = response.data.meta?.total || 0;
+
+        return this.users;
       } catch (error) {
         throw error;
       } finally {

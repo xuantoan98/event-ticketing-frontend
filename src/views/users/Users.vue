@@ -119,25 +119,25 @@
   const deletingId = ref(null);
 
   onMounted(() => {
-    userStore.fetchUsers(currentPage.value, PAGE_SIZE);
+    userStore.fetchPaginationUsers(currentPage.value, PAGE_SIZE);
   });
 
   watch(currentPage, (page) => {
-    userStore.fetchUsers(page, PAGE_SIZE)
+    userStore.fetchPaginationUsers(page, PAGE_SIZE)
   });
 
   async function handleSearchResult() {
     if (searchQuery.value.trim()) {
-      await userStore.fetchUsers(currentPage.value, PAGE_SIZE, DEFAULT_SORT.order, searchQuery.value.trim());
+      await userStore.fetchPaginationUsers(currentPage.value, PAGE_SIZE, DEFAULT_SORT.order, searchQuery.value.trim());
     } else {
-      fetchUsers();
+      fetchPaginationUsers();
     }
   }
 
   const handleSearchUsers = debounce(handleSearchResult, 500);
 
-  async function fetchUsers() {
-    await userStore.fetchUsers();
+  async function fetchPaginationUsers() {
+    await userStore.fetchPaginationUsers();
   }
 
   function openAddModal() {
@@ -167,7 +167,7 @@
     
     if (result.status === 200) {
       ElMessage.success('Thay đổi trạng thái người dùng thành công.');
-      fetchUsers();
+      fetchPaginationUsers();
     } else {
       ElMessage.error('Thay đổi trạng thái người dùng thất bại. Vui lòng thử lại sau.');
     }

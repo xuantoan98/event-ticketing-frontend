@@ -18,6 +18,23 @@ export const useInviteStore = defineStore('invite', {
 
         this.invites = response.data.data || [];
         this.total = response.data.meta?.total || 0;
+
+        return this.invites;
+      } catch (error) {
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
+    async fetchAllInvites() {
+      try {
+        this.loading = true;
+        const response = await axios.get('/invite');
+
+        this.invites = response.data.data || [];
+        this.total = response.data.meta?.total || 0;
+
+        return this.invites;
       } catch (error) {
         throw error;
       } finally {

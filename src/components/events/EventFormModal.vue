@@ -10,33 +10,34 @@
       <div>
         <h3 class="text-md">Thông tin bắt buộc</h3>
         <span class="text-xs italic">Nhập thông tin bên dưới để tạo sự kiện</span>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 justify-items-center items-center w-full mb-[18px] rounded-sm border border-dashed py-4 mt-4">
-          <div 
-            class="flex items-center justify-center w-full h-full cursor-pointer group"
-            @click="triggerFileSelect"
-            >
-            <div class="flex flex-col items-center justify-center gap-4">
-              <el-icon size="large"><Plus /></el-icon>
-              <p>
-                Ảnh sự kiện
-              </p>
+        <div class="px-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 justify-items-center items-center w-full rounded-sm border border-dashed py-4 mt-4">
+            <div 
+              class="flex items-center justify-center w-full h-full cursor-pointer group"
+              @click="triggerFileSelect"
+              >
+              <div class="flex flex-col items-center justify-center gap-4">
+                <el-icon size="large"><Plus /></el-icon>
+                <p>
+                  Ảnh sự kiện
+                </p>
+              </div>
             </div>
+
+            <img v-if="coverImagePreviewUrl" :src="coverImagePreviewUrl" alt="avatar" class="w-[80px] h-[80px] rounded-full object-cover" />
+            <p v-else class="text-gray-500 text-sm">Ảnh xem trước</p>
+
+            <input
+              type="file"
+              accept="image/png, image/jpeg"
+              ref="fileInput"
+              class="hidden"
+              @change="handleAvatarChange"
+            />
           </div>
-
-          <img v-if="avatarPreviewUrl" :src="avatarPreviewUrl" alt="avatar" class="w-[80px] h-[80px] rounded-full object-cover" />
-          <p v-else class="text-gray-500 text-sm">Ảnh xem trước</p>
-
-          <input
-            type="file"
-            accept="image/png, image/jpeg"
-            ref="fileInput"
-            class="hidden"
-            @change="handleAvatarChange"
-          />
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <div class="px-4 grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           <el-form-item label="Tiêu đề" prop="title">
             <el-input v-model="form.title" placeholder="Tiêu đề sự kiện" />
           </el-form-item>
@@ -61,13 +62,7 @@
           </el-form-item>
         </div>
 
-        <div class="">
-           <el-form-item label="Mô tả" prop="description">
-            <el-mention type="textarea" v-model="form.description" placeholder="Mô tả" />
-          </el-form-item>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="px-4 grid grid-cols-1 md:grid-cols-2 gap-4">
           <el-form-item label="Thời gian bắt đầu" prop="startDate">
             <el-date-picker
               v-model="form.startDate"
@@ -89,26 +84,157 @@
             />
           </el-form-item>
         </div>
+
+        <div class="px-4">
+           <el-form-item label="Mô tả" prop="description">
+            <el-mention type="textarea" v-model="form.description" placeholder="Mô tả" />
+          </el-form-item>
+        </div>
       </div>
-      <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <el-form-item label="Cơ quan" prop="organization">
-          <el-input v-model="form.organization" placeholder="Cơ quan" />
-        </el-form-item>
-        <el-form-item label="Trạng thái" prop="status">
-          <el-select v-model="form.status" placeholder="Trạng thái" :key="form.status">
-            <el-option label="Hoạt động" :value="1" />
-            <el-option label="Ngưng hoạt động" :value="0" />
-          </el-select>
-        </el-form-item>
-      </div> -->
-      <!-- <el-form-item label="Mô tả">
-        <el-input type="textarea" v-model="form.description" />
-      </el-form-item> -->
+      
+      <el-divider>
+        <el-icon><star-filled /></el-icon>
+      </el-divider>
+
+      <div>
+        <h3 class="text-md">Thông tin chi tiết</h3>
+        <span class="text-xs italic">Thông tin bổ sung cho sự kiện</span>
+
+        <div class="px-4">
+          <el-form-item label="Địa chỉ" prop="location">
+            <el-mention type="textarea" v-model="form.location" placeholder="Nhập địa chỉ rõ ràng..." />
+          </el-form-item>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <el-form-item label="Chi phí dự kiến" prop="estimatePrice">
+              <el-input-number v-model="form.estimatePrice" controls-position="right" placeholder="0" />
+            </el-form-item>
+
+            <el-form-item label="Chỗ ngồi" prop="isLimitSeat">
+              <el-radio-group v-model="form.isLimitSeat" @change="handleDisplayEnterLimitSeats">
+                <el-radio :value="0" border>Không giới hạn</el-radio>
+                <el-radio :value="1" border>Giới hạn</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </div>
+
+          <div class="">
+            <el-form-item 
+              label="Số lượng chỗ ngồi" 
+              prop="totalSeats"
+              v-show="isLimitSeats"
+              >
+              <el-input-number v-model="form.totalSeats" controls-position="right" placeholder="1" />
+            </el-form-item>
+          </div>
+
+          <div class="el-form-item flex-col">
+            <div class="flex items-center justify-start mb-2">
+              <label class="el-form-item__label">Người hỗ trợ</label>
+              <el-button type="primary" size="small" plain v-show="!showAddSupporters" @click="handleDisplayAddSupporters">
+                <el-icon><Plus /></el-icon>
+              </el-button>
+            </div>
+
+            <div class="flex items-center justify-between w-full gap-4">
+              <el-select 
+                v-model="form.supporters"
+                v-show="showAddSupporters"
+                placeholder="Người hỗ trợ" 
+                :key="form.supporters" 
+                filterable
+                multiple
+              >
+                <el-option
+                  v-for="item in userOptions"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                />
+              </el-select>
+              <el-button :icon="Close" circle v-show="showAddSupporters" @click="handleDisplayAddSupporters(false)" />
+            </div>
+          </div>
+
+          <div class="el-form-item flex-col">
+            <div class="flex items-center justify-start mb-2">
+              <label class="el-form-item__label">Khách mời</label>
+              <el-button type="primary" size="small" plain v-show="!showAddInvites" @click="handleDisplayAddInvites"><el-icon><Plus /></el-icon></el-button>
+            </div>
+            <div class="flex items-center justify-between w-full gap-4">
+              <el-select 
+                v-model="form.invites"
+                v-show="showAddInvites"
+                placeholder="Khách mời" 
+                :key="form.invites" 
+                filterable
+                multiple
+              >
+                <el-option
+                  v-for="item in inviteOptions"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                />
+              </el-select>
+              <el-button :icon="Close" circle v-show="showAddInvites" @click="handleDisplayAddInvites(false)" />
+            </div>
+          </div>
+
+          <div class="flex items-center justify-start mb-2">
+            <label class="el-form-item__label">Chi phí</label>
+            <el-button type="primary" size="small" plain @click="addExpense"><el-icon><Plus /></el-icon></el-button>
+          </div>
+
+          <div v-for="(cost, index) in form.costs" :key="index" class="box-expense mb-4 p-4 border rounded-md bg-gray-50">
+            <el-row :gutter="20">
+              <el-col :span="10">
+                <el-form-item label="Tên chi phí">
+                  <el-input v-model="cost.name" placeholder="Nhập tên chi phí" />
+                </el-form-item>
+              </el-col>
+
+              <el-col :span="4">
+                <el-form-item label="Giá">
+                  <el-input-number v-model="cost.price" :min="0" controls-position="right" placeholder="0" />
+                </el-form-item>
+              </el-col>
+
+              <el-col :span="4">
+                <el-form-item label="Số lượng">
+                  <el-input-number v-model="cost.quantity" :min="1" />
+                </el-form-item>
+              </el-col>
+
+              <el-col :span="4">
+                <el-form-item label="Loại">
+                  <el-select v-model="cost.type" placeholder="Chọn loại">
+                    <el-option label="Thu" value="income" />
+                    <el-option label="Chi" value="expense" />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+
+              <el-col :span="2">
+                <el-button type="danger" plain @click="removeExpense(index)">
+                  <el-icon><Remove /></el-icon>
+                </el-button>
+              </el-col>
+
+              <el-col :span="24">
+                <el-form-item label="Ghi chú">
+                  <el-input type="textarea" v-model="cost.note" rows="2" placeholder="Ghi chú thêm (nếu có)" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </div>
+        </div>
+      </div>
     </el-form>
 
     <template #footer>
       <el-button @click="emit('update:visible', false)">Hủy</el-button>
-      <el-button type="primary" @click="submitForm">
+      <el-button :loading="eventStore.loading" type="primary" @click="submitForm">
         {{ isEdit ? 'Cập nhật' : 'Lưu' }}
       </el-button>
     </template>
@@ -116,25 +242,38 @@
 </template>
 
 <script setup>
-  import { Plus } from '@element-plus/icons-vue';
+  import { Close, Delete, Plus, Remove } from '@element-plus/icons-vue';
   import { onMounted, reactive, ref } from 'vue';
   import { useEventCategoriesStore } from '../../stores/eventCategories';
+  import { useUserStore } from '../../stores/user';
+  import { useInviteStore } from '../../stores/invite';
+import { useEventStore } from '../../stores/event';
 
   const emit = defineEmits(['update:visible', 'refresh']);
   const eventCategoriesStore = useEventCategoriesStore();
+  const userStore = useUserStore();
+  const inviteStore = useInviteStore();
+  const eventStore = useEventStore();
 
-   // định nghĩa props visible: ẩn hiện modal, inviteData cho việc phân biệt modal add và update
+  // định nghĩa props visible: ẩn hiện modal, inviteData cho việc phân biệt modal add và update
   const props = defineProps({
     visible: Boolean,
     eventData: Object
   });
 
+  const eventCategoriesOptions = ref([]);
+  const userOptions = ref([]);
+  const inviteOptions = ref([]);
+
   const isEdit = ref(false);
+  const loading = ref(false);
   const formRef = ref();
   const fileInput = ref(null);
   const avatarFile = ref(null);
-  const avatarPreviewUrl = ref(null);
-  const eventCategoriesOptions = ref([]);
+  const coverImagePreviewUrl = ref(null);
+  const isLimitSeats = ref(false);
+  const showAddSupporters = ref(false);
+  const showAddInvites = ref(false);
   const form = reactive({
     coverImage: '',
     title: '',
@@ -142,8 +281,13 @@
     startDate: '',
     endDate: '',
     location: '',
-    isLimitSeat: '',
-    eventCategoriesId: ''
+    eventCategoriesId: '',
+    estimatePrice: 0,
+    isLimitSeat: 0,
+    totalSeats: 1,
+    supporters: [],
+    invites: [],
+    costs: []
   });
 
   const rules = {
@@ -155,7 +299,18 @@
   };
 
   async function submitForm() {
+    loading.value = true;
 
+    formRef.value.validate(async (valid) => {
+      if (!valid) return;
+      try {
+        
+        console.log(form);
+        return;
+      } catch (error) {
+        console.error(error);
+      }
+    })
   }
 
   function handleClose() {
@@ -164,7 +319,24 @@
   }
 
   function resetForm() {
-
+    isEdit.value = false;
+    formRef.value?.resetFields();
+    coverImagePreviewUrl.value = null;
+    Object.assign(form, {
+      coverImage: '',
+      title: '',
+      description: '',
+      startDate: '',
+      endDate: '',
+      location: '',
+      eventCategoriesId: '',
+      estimatePrice: 0,
+      isLimitSeat: 0,
+      totalSeats: 1,
+      supporters: [],
+      invites: [],
+      costs: []
+    });
   }
 
   // kích hoạt input file để chọn ảnh
@@ -177,15 +349,60 @@
     if (!file) return;
 
     avatarFile.value = file
-    avatarPreviewUrl.value = URL.createObjectURL(file);
+    coverImagePreviewUrl.value = URL.createObjectURL(file);
   }
 
+  function handleDisplayEnterLimitSeats(value) {
+    value === 0 ? isLimitSeats.value = false : isLimitSeats.value = true;
+  }
+
+  function handleDisplayAddSupporters(value = true) {
+    showAddSupporters.value = value;
+  }
+
+  function handleDisplayAddInvites(value = true) {
+    showAddInvites.value = value;
+  }
+
+  function addExpense() {
+    form.costs.push({
+      name: '',
+      price: 0,
+      quantity: 1,
+      type: 'expense', // hoặc 'income'
+      note: ''
+    });
+  };
+
+  function removeExpense(index) {
+    form.costs.splice(index, 1);
+  };
+
   onMounted(async () => {
+    // Lấy ds danh mục sự kiện
     const resultEventCategories = await eventCategoriesStore.fetchEventCategories();
     eventCategoriesOptions.value = resultEventCategories.map((d) => {
       return {
         id: d._id,
         name: d.name
+      }
+    });
+
+    // lấy ds nhân viên trong hệ thống
+    const resultUsers = await userStore.fetchUsers();
+    userOptions.value = resultUsers.map((u) => {
+      return {
+        id: u._id,
+        name: u.name
+      }
+    });
+
+    // lấy ds khách mời trong hệ thống
+    const resultInvites = await inviteStore.fetchAllInvites();
+    inviteOptions.value = resultInvites.map((u) => {
+      return {
+        id: u._id,
+        name: u.name
       }
     });
   });
@@ -194,5 +411,19 @@
 <style>
   .el-date-editor.el-input, .el-date-editor.el-input__wrapper {
     width: 100%;
+  }
+
+  .el-form-item__content .el-input-number {
+    width: 100%;
+  }
+
+  .el-form-item__content .el-input__inner {
+    text-align: left;
+  }
+
+  .box-expense {
+    border: 1px solid #e4e7ed;
+    border-radius: 8px;
+    background-color: #fafafa;
   }
 </style>
