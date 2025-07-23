@@ -247,7 +247,7 @@
   import { useEventCategoriesStore } from '../../stores/eventCategories';
   import { useUserStore } from '../../stores/user';
   import { useInviteStore } from '../../stores/invite';
-import { useEventStore } from '../../stores/event';
+  import { useEventStore } from '../../stores/event';
 
   const emit = defineEmits(['update:visible', 'refresh']);
   const eventCategoriesStore = useEventCategoriesStore();
