@@ -32,7 +32,7 @@
             <el-dropdown-item>
               <div class="flex items-center gap-x-3">
                 <el-icon class="!m-0" :size="18"><Setting /></el-icon>
-                Dổi mật khẩu
+                Đổi mật khẩu
               </div>
             </el-dropdown-item>
             <el-dropdown-item @click="handleLogout">
