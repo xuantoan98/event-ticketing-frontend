@@ -248,6 +248,8 @@
   import { useUserStore } from '../../stores/user';
   import { useInviteStore } from '../../stores/invite';
   import { useEventStore } from '../../stores/event';
+  import axios from '../../utils/axios';
+  import { ElMessage } from 'element-plus';
 
   const emit = defineEmits(['update:visible', 'refresh']);
   const eventCategoriesStore = useEventCategoriesStore();
@@ -269,7 +271,7 @@
   const loading = ref(false);
   const formRef = ref();
   const fileInput = ref(null);
-  const avatarFile = ref(null);
+  const coverImageFile = ref(null);
   const coverImagePreviewUrl = ref(null);
   const isLimitSeats = ref(false);
   const showAddSupporters = ref(false);
@@ -304,9 +306,40 @@
     formRef.value.validate(async (valid) => {
       if (!valid) return;
       try {
-        
-        console.log(form);
-        return;
+        let coverImagePath = form.coverImage;
+
+        if (coverImageFile.value) {
+          const formData = new FormData();
+          formData.append('avatar', coverImageFile.value);
+
+          const res = await axios.post('/upload-file', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          });
+
+          if (res.status === 200) {
+            coverImagePath = res.data.data.path;
+          } else {
+            ElMessage.error('Tải ảnh thất bại');
+            return;
+          }
+        }
+
+        const payload = {
+          ...form,
+          coverImage: coverImagePath,
+        }
+
+        if (isEdit.value && props.eventData?._id) {
+          await eventStore.updateEvent(props.eventData?._id, payload);
+          ElMessage.success('Cập nhật thành công');
+        } else {
+          await eventStore.addEvent(payload);
+          ElMessage.success('Thêm mới thành công');
+        }
+
+        loading.value = false;
+        emit('refresh');
+        handleClose();
       } catch (error) {
         console.error(error);
       }
@@ -348,7 +381,7 @@
     const file = event.target.files[0];
     if (!file) return;
 
-    avatarFile.value = file
+    coverImageFile.value = file
     coverImagePreviewUrl.value = URL.createObjectURL(file);
   }
 

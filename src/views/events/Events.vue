@@ -4,8 +4,10 @@
 
     <div class="flex items-center gap-x-4">
       <el-input
+        v-model="searchQuery"
         placeholder="Tìm kiếm..."
         :suffix-icon="Search"
+        @input="handleSearchEvent"
       />
       <el-button type="primary" @click="openAddModal">
         <el-icon class="mr-1"><Plus /></el-icon>
@@ -60,15 +62,15 @@
       <!-- <el-table-column prop="description" label="Mô tả" show-overflow-tooltip /> -->
 
       <el-table-column label="Hành động">
-        <!-- <template #default="{ row }">
+        <template #default="{ row }">
           <el-button type="warning" size="small" @click="openEditModal(row)">Sửa</el-button>
           <el-button 
             type="danger" 
             size="small" 
-            @click="deleteInvite(row._id)"
+            @click="deleteEvent(row._id)"
             :loading="deletingId === row._id"
           >Xóa</el-button>
-        </template> -->
+        </template>
       </el-table-column>
       <template #empty>
         <div class="text-gray-500 text-sm italic text-center py-6">
@@ -97,16 +99,20 @@
 <script setup>
   import { computed, onMounted, ref, watch } from 'vue';
   import { useEventStore } from '../../stores/event';
-  import { DEFAULT_PAGE, PAGE_SIZE } from '../../constants';
+  import { DEFAULT_PAGE, DEFAULT_SORT, PAGE_SIZE } from '../../constants';
   import { AlarmClock, Clock, Search } from '@element-plus/icons-vue';
   import { formatDateTime } from '../../utils/formatter';
   import EventFormModal from '../../components/events/EventFormModal.vue';
+  import { debounce } from 'lodash';
+  import { ElMessage, ElMessageBox } from 'element-plus';
 
   const eventStore = useEventStore();
   const currentPage = ref(DEFAULT_PAGE);
   const pageSize = ref(PAGE_SIZE);
   const showModal = ref(false);
   const editingEvent = ref(null);
+  const searchQuery = ref('');
+  const deletingId = ref(null);
 
   function getStatusInfo(status) {
     const statusMap = {
@@ -124,9 +130,47 @@
     editingEvent.value = null;
   }
 
+  function openEditModal(eventData) {
+    showModal.value = true;
+    editingEvent.value = eventData;
+  }
+
+  async function deleteEvent(eventId) {
+    await ElMessageBox.confirm(
+      'Bạn có chắc chắn muốn dừng hoạt động sự kiện này?',
+      'Xác nhận',
+      {
+        confirmButtonText: 'Dừng',
+        cancelButtonText: 'Hủy',
+        type: 'warning'
+      }
+    );
+
+    deletingId.value = eventId;
+    const result = await eventStore.deleteEvent(eventId);
+    deletingId.value = null;
+
+    if (result.status === 200) {
+      ElMessage.success('Thay đổi trạng thái sự kiện thành công.');
+      fetchEvents();
+    } else {
+      ElMessage.error('Thay đổi trạng thái sự kiện thất bại. Vui lòng thử lại sau.');
+    }
+  }
+
   const fetchEvents = async () => {
     await eventStore.fetchEvents();
   }
+
+  async function handleSearchResult () {
+    if (searchQuery.value.trim()) {
+      await eventStore.fetchEvents(currentPage.value, PAGE_SIZE, DEFAULT_SORT.order, searchQuery.value.trim());
+    } else {
+      fetchEvents();
+    }
+  }
+
+  const handleSearchEvent = debounce(handleSearchResult, 500)
 
   watch(currentPage, (page) => {
     eventStore.fetchEvents(page, PAGE_SIZE);

@@ -50,7 +50,7 @@ export const useEventStore = defineStore('event', {
     },
     async deleteEvent(eventId) {
       try {
-        const response = await axios.delete(`/events/${eventId}`);
+        const response = await axios.patch(`/events/${eventId}/cancel`);
         return response;
       } catch (error) {
         throw error;

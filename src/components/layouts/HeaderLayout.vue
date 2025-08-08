@@ -20,25 +20,25 @@
                 class="flex items-center gap-x-3"
                 >
                 <el-icon class="!m-0" :size="18"><User /></el-icon>
-                Manager Account
+                Quản lý tài khoản
               </router-link>
             </el-dropdown-item>
             <el-dropdown-item>
               <div class="flex items-center gap-x-3">
                 <el-icon class="!m-0" :size="18"><Memo /></el-icon>
-                My Events
+                Sự kiện của tôi
               </div>
             </el-dropdown-item>
             <el-dropdown-item>
               <div class="flex items-center gap-x-3">
                 <el-icon class="!m-0" :size="18"><Setting /></el-icon>
-                Change password
+                Dổi mật khẩu
               </div>
             </el-dropdown-item>
             <el-dropdown-item @click="handleLogout">
               <div class="flex items-center gap-x-3">
                 <el-icon class="!m-0" :size="18"><SwitchButton /></el-icon>
-                Logout
+                Đăng xuất
               </div>
             </el-dropdown-item>
           </el-dropdown-menu>
