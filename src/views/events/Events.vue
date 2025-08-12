@@ -97,7 +97,7 @@
 </template>
 
 <script setup>
-  import { computed, onMounted, ref, watch } from 'vue';
+  import { onMounted, ref, watch } from 'vue';
   import { useEventStore } from '../../stores/event';
   import { DEFAULT_PAGE, DEFAULT_SORT, PAGE_SIZE } from '../../constants';
   import { AlarmClock, Clock, Search } from '@element-plus/icons-vue';
@@ -136,26 +136,28 @@
   }
 
   async function deleteEvent(eventId) {
-    await ElMessageBox.confirm(
-      'Bạn có chắc chắn muốn dừng hoạt động sự kiện này?',
-      'Xác nhận',
-      {
-        confirmButtonText: 'Dừng',
-        cancelButtonText: 'Hủy',
-        type: 'warning'
+    try {
+      await ElMessageBox.confirm(
+        'Bạn có chắc chắn muốn dừng hoạt động sự kiện này?',
+        'Xác nhận',
+        {
+          confirmButtonText: 'Dừng',
+          cancelButtonText: 'Hủy',
+          type: 'warning'
+        }
+      );
+
+      deletingId.value = eventId;
+      const result = await eventStore.deleteEvent(eventId);
+      deletingId.value = null;
+
+      if (result.status === 200) {
+        ElMessage.success('Thay đổi trạng thái sự kiện thành công.');
+        fetchEvents();
+      } else {
+        ElMessage.error('Thay đổi trạng thái sự kiện thất bại. Vui lòng thử lại sau.');
       }
-    );
-
-    deletingId.value = eventId;
-    const result = await eventStore.deleteEvent(eventId);
-    deletingId.value = null;
-
-    if (result.status === 200) {
-      ElMessage.success('Thay đổi trạng thái sự kiện thành công.');
-      fetchEvents();
-    } else {
-      ElMessage.error('Thay đổi trạng thái sự kiện thất bại. Vui lòng thử lại sau.');
-    }
+    } catch (error) {}
   }
 
   const fetchEvents = async () => {

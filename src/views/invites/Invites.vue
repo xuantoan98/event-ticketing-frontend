@@ -106,26 +106,28 @@
   }
 
   async function deleteInvite(inviteId) {
-    await ElMessageBox.confirm(
-      'Bạn có chắc chắn muốn dừng hoạt động khách mời này?',
-      'Xác nhận',
-      {
-        confirmButtonText: 'Dừng',
-        cancelButtonText: 'Hủy',
-        type: 'warning'
+    try {
+      await ElMessageBox.confirm(
+        'Bạn có chắc chắn muốn dừng hoạt động khách mời này?',
+        'Xác nhận',
+        {
+          confirmButtonText: 'Dừng',
+          cancelButtonText: 'Hủy',
+          type: 'warning'
+        }
+      );
+
+      deletingId.value = inviteId;
+      const result = await inviteStore.deleteInvite(inviteId);
+      deletingId.value = null;
+
+      if (result.status === 200) {
+        ElMessage.success('Thay đổi trạng thái khách mời thành công.');
+        fetchInvites();
+      } else {
+        ElMessage.error('Thay đổi trạng thái khách mời thất bại. Vui lòng thử lại sau.');
       }
-    );
-
-    deletingId.value = inviteId;
-    const result = await inviteStore.deleteInvite(inviteId);
-    deletingId.value = null;
-
-    if (result.status === 200) {
-      ElMessage.success('Thay đổi trạng thái khách mời thành công.');
-      fetchInvites();
-    } else {
-      ElMessage.error('Thay đổi trạng thái khách mời thất bại. Vui lòng thử lại sau.');
-    }
+    } catch (error) {}
   }
 
   const fetchInvites = async () => {

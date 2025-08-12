@@ -155,25 +155,27 @@
   }
 
   async function deleteUser(userId) {
-    await ElMessageBox.confirm(
-      'Bạn có chắc chắn muốn dừng hoạt động người dùng này?',
-      'Xác nhận',
-      {
-        confirmButtonText: 'Dừng',
-        cancelButtonText: 'Hủy',
-        type: 'warning'
-      }
-    );
+    try {
+      await ElMessageBox.confirm(
+        'Bạn có chắc chắn muốn dừng hoạt động người dùng này?',
+        'Xác nhận',
+        {
+          confirmButtonText: 'Dừng',
+          cancelButtonText: 'Hủy',
+          type: 'warning'
+        }
+      );
 
-    deletingId.value = userId;
-    const result = await userStore.deleteUser(userId);
-    deletingId.value = null;
-    
-    if (result.status === 200) {
-      ElMessage.success('Thay đổi trạng thái người dùng thành công.');
-      fetchPaginationUsers();
-    } else {
-      ElMessage.error('Thay đổi trạng thái người dùng thất bại. Vui lòng thử lại sau.');
-    }
+      deletingId.value = userId;
+      const result = await userStore.deleteUser(userId);
+      deletingId.value = null;
+      
+      if (result.status === 200) {
+        ElMessage.success('Thay đổi trạng thái người dùng thành công.');
+        fetchPaginationUsers();
+      } else {
+        ElMessage.error('Thay đổi trạng thái người dùng thất bại. Vui lòng thử lại sau.');
+      }
+    } catch (error) {}
   }
 </script>

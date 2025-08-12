@@ -101,26 +101,28 @@
   }
 
   async function deleteEventCategory(id) {
-    await ElMessageBox.confirm(
-      'Bạn có chắc chắn muốn dừng hoạt động danh mục này?',
-      'Xác nhận',
-      {
-        confirmButtonText: 'Dừng',
-        cancelButtonText: 'Hủy',
-        type: 'warning'
+    try {
+      await ElMessageBox.confirm(
+        'Bạn có chắc chắn muốn dừng hoạt động danh mục này?',
+        'Xác nhận',
+        {
+          confirmButtonText: 'Dừng',
+          cancelButtonText: 'Hủy',
+          type: 'warning'
+        }
+      );
+
+      deletingId.value = id;
+      const result = await eventCategoriesStore.deleteEventCategory(id);    
+      deletingId.value = null;
+
+      if (result.status === 200) {
+        ElMessage.success('Thay đổi trạng thái thành công');
+        await eventCategoriesStore.fetchEventCategories();
+      } else {
+        ElMessage.error('Thay đổi trạng thái thất bại');
       }
-    );
-
-    deletingId.value = id;
-    const result = await eventCategoriesStore.deleteEventCategory(id);    
-    deletingId.value = null;
-
-    if (result.status === 200) {
-      ElMessage.success('Thay đổi trạng thái thành công');
-      await eventCategoriesStore.fetchEventCategories();
-    } else {
-      ElMessage.error('Thay đổi trạng thái thất bại');
-    }
+    } catch (error) {}
   }
 
   watch(currentPage, (page) => {
