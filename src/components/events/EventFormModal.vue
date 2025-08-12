@@ -243,7 +243,7 @@
 
 <script setup>
   import { Close, Delete, Plus, Remove } from '@element-plus/icons-vue';
-  import { onMounted, reactive, ref } from 'vue';
+  import { onMounted, reactive, ref, watch } from 'vue';
   import { useEventCategoriesStore } from '../../stores/eventCategories';
   import { useUserStore } from '../../stores/user';
   import { useInviteStore } from '../../stores/invite';
@@ -411,6 +411,22 @@
     form.costs.splice(index, 1);
   };
 
+  watch(
+    () => props.visible,
+    (val) => {
+      if (val && props.eventData) {
+        isEdit.value = true;
+        Object.assign(form, props.eventData);
+
+        coverImageFile.value = null; // reset file
+        coverImagePreviewUrl.value = props.eventData.coverImage || null;
+      } else {
+        isEdit.value = false;
+        resetForm();
+      }
+    }
+  );
+
   onMounted(async () => {
     // Lấy ds danh mục sự kiện
     const resultEventCategories = await eventCategoriesStore.fetchEventCategories();
@@ -458,5 +474,9 @@
     border: 1px solid #e4e7ed;
     border-radius: 8px;
     background-color: #fafafa;
+  }
+
+  .el-form-item__content .el-textarea__inner {
+    height: 100px;
   }
 </style>

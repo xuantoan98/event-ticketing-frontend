@@ -150,6 +150,10 @@
     showModal.value = true;
   }
 
+  const fetchUsers = async () => {
+    await userStore.fetchUsers();
+  }
+
   async function deleteUser(userId) {
     await ElMessageBox.confirm(
       'Bạn có chắc chắn muốn dừng hoạt động người dùng này?',
