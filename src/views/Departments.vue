@@ -16,7 +16,7 @@
     </div>
   </div>
 
-  <div>
+  <div class="mt-4">
     <el-table :data="departmentStore.departments" v-loading="departmentStore.loading">
       <el-table-column prop="name" label="Tên phòng ban" />
       <el-table-column prop="email" label="Email" />
@@ -104,26 +104,28 @@
   }
 
   const deleteDepartment = async (id) => {
-    await ElMessageBox.confirm(
-      'Bạn có chắc chắn muốn dừng hoạt động phòng ban này?',
-      'Xác nhận',
-      {
-        confirmButtonText: 'Dừng',
-        cancelButtonText: 'Hủy',
-        type: 'warning'
+    try {
+      await ElMessageBox.confirm(
+        'Bạn có chắc chắn muốn dừng hoạt động phòng ban này?',
+        'Xác nhận',
+        {
+          confirmButtonText: 'Dừng',
+          cancelButtonText: 'Hủy',
+          type: 'warning'
+        }
+      );
+
+      deletingId.value = id;
+      const result = await departmentStore.deleteDepartment(id);
+      deletingId.value = null;
+
+      if (result.status === 200) {
+        ElMessage.success('Thay đổi trạng thái thành công');
+        await departmentStore.fetchDepartments();
+      } else {
+        ElMessage.error('Thay đổi trạng thái thất bại');
       }
-    );
-
-    deletingId.value = id;
-    const result = await departmentStore.deleteDepartment(id);
-    deletingId.value = null;
-
-    if (result.status === 200) {
-      ElMessage.success('Thay đổi trạng thái thành công');
-      await departmentStore.fetchDepartments();
-    } else {
-      ElMessage.error('Thay đổi trạng thái thất bại');
-    }
+    } catch (error) {}
   }
 
   async function fetchSearchResult() {

@@ -16,7 +16,7 @@
     </div>
   </div>
 
-  <div>
+  <div class="mt-4">
     <el-table :data="eventCategoriesStore.eventCategories" v-loading="eventCategoriesStore.loading">
       <el-table-column prop="name" label="Tên danh mục" />
       <el-table-column prop="description" label="Mô tả" />

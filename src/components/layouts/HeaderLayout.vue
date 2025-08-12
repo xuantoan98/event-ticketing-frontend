@@ -24,10 +24,13 @@
               </router-link>
             </el-dropdown-item>
             <el-dropdown-item>
-              <div class="flex items-center gap-x-3">
+              <router-link 
+                :to="{ name: 'MyEvents' }" 
+                class="flex items-center gap-x-3"
+                >
                 <el-icon class="!m-0" :size="18"><Memo /></el-icon>
                 Sự kiện của tôi
-              </div>
+              </router-link>
             </el-dropdown-item>
             <el-dropdown-item>
               <div class="flex items-center gap-x-3">

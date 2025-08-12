@@ -55,6 +55,19 @@ export const useEventStore = defineStore('event', {
       } catch (error) {
         throw error;
       }
+    },
+    async fetchMyEvents() {
+      try {
+        this.loading = true;
+
+        const response = await axios.get('/events/my-events');
+        this.events = response.data.data || [];
+        return this.events;
+      } catch (error) {
+        throw error;
+      } finally {
+        this.loading = false;
+      }
     }
   }
 });

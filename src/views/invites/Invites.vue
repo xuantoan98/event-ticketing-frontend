@@ -16,7 +16,7 @@
     </div>
   </div>
 
-  <div>
+  <div class="mt-4">
     <el-table :data="inviteStore.invites" v-loading="inviteStore.loading">
       <el-table-column prop="name" label="Tên khách mời" />
       <el-table-column prop="email" label="Email" show-overflow-tooltip />

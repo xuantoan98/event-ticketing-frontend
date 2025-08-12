@@ -16,7 +16,7 @@
     </div>
   </div>
 
-  <div>
+  <div class="mt-4">
     <el-table :data="userStore.users" v-loading="userStore.loading">
       <el-table-column prop="avatar" label="Avatar" width="100">
         <template #default="{ row }">

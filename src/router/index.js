@@ -27,6 +27,12 @@ const routes = [
         label: 'Thông tin tài khoản',
         component: () => import('../views/users/UserDetail.vue')
       },
+      {
+        path: 'my-events',
+        name: 'MyEvents',
+        label: 'Sự kiện của tôi',
+        component: () => import('../views/users/MyEvents.vue')
+      },
       ...routeDefinitions
     ]
   },

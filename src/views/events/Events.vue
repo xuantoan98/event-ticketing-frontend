@@ -16,7 +16,7 @@
     </div>
   </div>
 
-  <div>
+  <div class="mt-4">
     <el-table :data="eventStore.events" v-loading="eventStore.loading">
       <el-table-column prop="coverImage" label="Ảnh sự kiện" width="110">
         <template #default="{ row }">
