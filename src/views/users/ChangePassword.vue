@@ -19,7 +19,7 @@
         </el-form-item>
       </el-form>
 
-      <el-button type="primary" @click="submitForm">
+      <el-button type="primary" @click="submitForm" :loading="userStore.loading">
         Cập nhật
       </el-button>
       <el-button type="warning" @click="resetForm">
