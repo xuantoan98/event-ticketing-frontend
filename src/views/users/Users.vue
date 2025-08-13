@@ -26,7 +26,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="name" label="Họ và tên" />
-      <el-table-column prop="email" label="Email" show-overflow-tooltip pro />
+      <el-table-column prop="email" label="Email" show-overflow-tooltip />
       <el-table-column prop="role" label="Chức vụ">
         <template #default="{ row }">
           <el-tag v-if="row.role === 'admin'" type="danger" effect="plain">

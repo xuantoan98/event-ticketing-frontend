@@ -19,7 +19,7 @@
   <div class="mt-4">
     <el-table :data="departmentStore.departments" v-loading="departmentStore.loading">
       <el-table-column prop="name" label="Tên phòng ban" />
-      <el-table-column prop="email" label="Email" />
+      <el-table-column prop="email" label="Email" show-overflow-tooltip />
       <el-table-column prop="phone" label="SĐT" />
       <el-table-column prop="description" label="Mô tả" />
       <el-table-column label="Trạng thái">
@@ -31,7 +31,7 @@
       </el-table-column>
       <el-table-column label="Hành động">
         <template #default="{ row }">
-          <el-button type="primary" size="small" @click="openEditModal(row)">Sửa</el-button>
+          <el-button type="warning" size="small" @click="openEditModal(row)">Sửa</el-button>
           <el-button 
             type="danger" 
             size="small" 
