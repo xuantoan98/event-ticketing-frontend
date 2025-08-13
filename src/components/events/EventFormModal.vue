@@ -107,7 +107,16 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <el-form-item label="Chi phí dự kiến" prop="estimatePrice">
-              <el-input-number v-model="form.estimatePrice" controls-position="right" placeholder="0" />
+              <el-input
+                v-model="form.estimatePrice"
+                style="width: 240px"
+                placeholder="Nhập số tiền"
+                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')"
+                :parser="(value) => value.replace(/[\sVNĐ.]*/g, '')"
+              >
+                <template #append>VND</template>
+              </el-input>
+              <!-- <el-input-number v-model="form.estimatePrice" controls-position="right" placeholder="0"  /> -->
             </el-form-item>
 
             <el-form-item label="Chỗ ngồi" prop="isLimitSeat">
@@ -138,10 +147,10 @@
 
             <div class="flex items-center justify-between w-full gap-4">
               <el-select 
-                v-model="form.supporters"
+                v-model="form.supports.userId"
                 v-show="showAddSupporters"
                 placeholder="Người hỗ trợ" 
-                :key="form.supporters" 
+                :key="form.supports.userId" 
                 filterable
                 multiple
               >
@@ -188,15 +197,17 @@
 
           <div v-for="(cost, index) in form.costs" :key="index" class="box-expense mb-4 p-4 border rounded-md bg-gray-50">
             <el-row :gutter="20">
-              <el-col :span="10">
+              <el-col :span="9">
                 <el-form-item label="Tên chi phí">
                   <el-input v-model="cost.name" placeholder="Nhập tên chi phí" />
                 </el-form-item>
               </el-col>
 
-              <el-col :span="4">
+              <el-col :span="6">
                 <el-form-item label="Giá">
-                  <el-input-number v-model="cost.price" :min="0" controls-position="right" placeholder="0" />
+                  <el-input v-model="cost.price" :min="0" controls-position="right" placeholder="0">
+                    <template #append>VND</template>
+                  </el-input>
                 </el-form-item>
               </el-col>
 
@@ -206,7 +217,7 @@
                 </el-form-item>
               </el-col>
 
-              <el-col :span="4">
+              <el-col :span="3">
                 <el-form-item label="Loại">
                   <el-select v-model="cost.type" placeholder="Chọn loại">
                     <el-option label="Thu" value="income" />
@@ -215,8 +226,8 @@
                 </el-form-item>
               </el-col>
 
-              <el-col :span="2">
-                <el-button type="danger" plain @click="removeExpense(index)">
+              <el-col :span="2" style="text-align: right;">
+                <el-button size="small" type="danger" circle @click="removeExpense(index)">
                   <el-icon><Remove /></el-icon>
                 </el-button>
               </el-col>
@@ -234,7 +245,7 @@
 
     <template #footer>
       <el-button @click="emit('update:visible', false)">Hủy</el-button>
-      <el-button :loading="eventStore.loading" type="primary" @click="submitForm">
+      <el-button :loading="loading" type="primary" @click="submitForm">
         {{ isEdit ? 'Cập nhật' : 'Lưu' }}
       </el-button>
     </template>
@@ -283,13 +294,14 @@
     startDate: '',
     endDate: '',
     location: '',
-    eventCategoriesId: '',
+    eventCategoriesId: [],
     estimatePrice: 0,
     isLimitSeat: 0,
-    totalSeats: 1,
+    totalSeats: 0,
     supporters: [],
     invites: [],
-    costs: []
+    costs: [],
+    supports: {}
   });
 
   const rules = {
@@ -297,7 +309,8 @@
     startDate: [{ required: true, message: 'Thời gian bắt đầu là bắt buộc', trigger: 'blur' }],
     endDate: [{ required: true, message: 'Thời gian kết thúc là bắt buộc', trigger: 'blur' }],
     eventCategoriesId: [{ required: true, message: 'Danh mục sự kiện là bắt buộc', trigger: 'blur' }],
-    description: [{ required: true, message: 'Mô tả là bắt buộc', trigger: 'blur'}]
+    description: [{ required: true, message: 'Mô tả là bắt buộc', trigger: 'blur'}],
+    estimatePrice: [{ type: 'number', message: 'Chi phí dự kiến phải là số' },]
   };
 
   async function submitForm() {
@@ -330,9 +343,27 @@
         }
 
         if (isEdit.value && props.eventData?._id) {
+          // nếu là update thì cần modify lại dữ liệu danh mục, người hỗ trợ và khách mời  
+          if (form.eventCategoriesId.length > 0) {
+            const eventCategoriesUpdate = form.eventCategoriesId.map(e => e._id ? e._id : e);
+            payload.eventCategoriesId = eventCategoriesUpdate;
+          }
+          
+          // ngời hỗ trợ
+          if (form.supporters.length > 0) {
+            const eventSupports = form.supporters.map(e => e._id ? e._id : e);
+            payload.supporters = eventSupports;
+          }
+          
+          // khách mời
+          if (form.invites.length > 0) {
+            const eventInvites = form.invites.map(e => e._id ? e._id : e);
+            payload.invites = eventInvites;
+          }
+
           await eventStore.updateEvent(props.eventData?._id, payload);
           ElMessage.success('Cập nhật thành công');
-        } else {
+        } else {          
           await eventStore.addEvent(payload);
           ElMessage.success('Thêm mới thành công');
         }
@@ -362,13 +393,14 @@
       startDate: '',
       endDate: '',
       location: '',
-      eventCategoriesId: '',
+      eventCategoriesId: [],
       estimatePrice: 0,
       isLimitSeat: 0,
-      totalSeats: 1,
+      totalSeats: 0,
       supporters: [],
       invites: [],
-      costs: []
+      costs: [],
+      supports: {}
     });
   }
 
@@ -420,6 +452,9 @@
 
         coverImageFile.value = null; // reset file
         coverImagePreviewUrl.value = props.eventData.coverImage || null;
+        if (props.eventData.supports.userInfo.length > 0) {
+          showAddSupporters.value = true;
+        }
       } else {
         isEdit.value = false;
         resetForm();

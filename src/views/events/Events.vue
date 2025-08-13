@@ -47,14 +47,14 @@
       </el-table-column>
       <el-table-column prop="eventCategoriesId" label="Danh mục">
         <template #default="{ row }">
-          <template v-for="(item, index) in row.eventCategoriesId.slice(0,1)" :key="index">
+          <template v-for="(item, index) in row.eventCategory.slice(0,1)" :key="index">
             <el-tag size="small" class="mr-1">{{ item.name }}</el-tag>
           </template>
-          <el-tooltip v-if="row.eventCategoriesId.length > 1" placement="top">
+          <el-tooltip v-if="row.eventCategory.length > 1" placement="top">
             <template #content>
-              {{ row.eventCategoriesId.slice(1).map(c => c.name).join(', ') }}
+              {{ row.eventCategory.slice(1).map(c => c.name).join(', ') }}
             </template>
-            <el-tag size="small" type="info">+{{ row.eventCategoriesId.length - 1 }}</el-tag>
+            <el-tag size="small" type="info">+{{ row.eventCategory.length - 1 }}</el-tag>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -133,6 +133,10 @@
   function openEditModal(eventData) {
     showModal.value = true;
     editingEvent.value = eventData;
+    
+
+    console.log(eventData);
+    
   }
 
   async function deleteEvent(eventId) {
