@@ -33,6 +33,12 @@ const routes = [
         label: 'Sự kiện của tôi',
         component: () => import('../views/users/MyEvents.vue')
       },
+      {
+        path: 'change-password',
+        name: 'ChangePassword',
+        label: 'Đổi mật khẩu',
+        component: () => import('../views/users/ChangePassword.vue')
+      },
       ...routeDefinitions
     ]
   },

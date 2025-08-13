@@ -74,6 +74,20 @@ export const useUserStore = defineStore('user', {
       } finally {
         this.loading = false;
       }
+    },
+    async changePassword(oldPassword, newPassword) {
+      try {
+        this.loading = true;
+        const response = await axios.post('/users/change-password', {
+          oldPassword: oldPassword,
+          newPassword: newPassword
+        });
+        return response;
+      } catch (error) {
+        throw error;
+      } finally {
+        this.loading = false;
+      }
     }
   }
 });
