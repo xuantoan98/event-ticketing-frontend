@@ -310,7 +310,7 @@
     endDate: [{ required: true, message: 'Thời gian kết thúc là bắt buộc', trigger: 'blur' }],
     eventCategoriesId: [{ required: true, message: 'Danh mục sự kiện là bắt buộc', trigger: 'blur' }],
     description: [{ required: true, message: 'Mô tả là bắt buộc', trigger: 'blur'}],
-    estimatePrice: [{ type: 'number', message: 'Chi phí dự kiến phải là số' },]
+    // estimatePrice: [{ type: 'number', message: 'Chi phí dự kiến phải là số' },]
   };
 
   async function submitForm() {

@@ -68,6 +68,21 @@ export const useEventStore = defineStore('event', {
       } finally {
         this.loading = false;
       }
-    }
+    },
+    async fetchAllEvents() {
+      try {
+        this.loading = true;
+        const response = await axios.get('/events');
+
+        this.events = response.data.data || [];
+        this.total = response.data.meta?.total || 0;
+
+        return this.events;
+      } catch (error) {
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
   }
 });
