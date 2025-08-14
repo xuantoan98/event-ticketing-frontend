@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-between">
-    <h2>Các danh mục sự kiện</h2>
+    <h2>Danh mục sự kiện</h2>
 
     <div class="flex items-center gap-x-4">
       <el-input

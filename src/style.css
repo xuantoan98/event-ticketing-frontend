@@ -3,3 +3,8 @@
 * {
   font-family: 'Inter', sans-serif;
 }
+
+.main-class h2 {
+  font-size: 20px;
+  font-weight: 500;
+}

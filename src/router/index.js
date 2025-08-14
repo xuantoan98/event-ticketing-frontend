@@ -9,6 +9,11 @@ const routes = [
     meta: { public: true }
   },
   {
+    path: '/forgot-password',
+    component: () => import('../views/ForgotPassword.vue'),
+    meta: { public: true }
+  },
+  {
     path: '/register',
     component: () => import('../views/Register.vue'),
     meta: { public: true }

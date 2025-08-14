@@ -109,7 +109,7 @@
             <el-form-item label="Chi phí dự kiến" prop="estimatePrice">
               <el-input
                 v-model="form.estimatePrice"
-                style="width: 240px"
+                style="width: 100%"
                 placeholder="Nhập số tiền"
                 :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')"
                 :parser="(value) => value.replace(/[\sVNĐ.]*/g, '')"
@@ -190,7 +190,7 @@
             </div>
           </div>
 
-          <div class="flex items-center justify-start mb-2">
+          <!-- <div class="flex items-center justify-start mb-2">
             <label class="el-form-item__label">Chi phí</label>
             <el-button type="primary" size="small" plain @click="addExpense"><el-icon><Plus /></el-icon></el-button>
           </div>
@@ -238,7 +238,7 @@
                 </el-form-item>
               </el-col>
             </el-row>
-          </div>
+          </div> -->
         </div>
       </div>
     </el-form>

@@ -25,4 +25,9 @@ instance.interceptors.request.use(
   }
 );
 
+const publicApi = axios.create({
+  baseURL: 'http://localhost:5000/api',
+});
+
 export default instance;
+export { publicApi };
