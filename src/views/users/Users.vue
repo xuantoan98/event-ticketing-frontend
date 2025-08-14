@@ -96,7 +96,8 @@
   <UserFormModal
     v-model:visible="showModal"
     :userData="editingUser"
-    @refresh="fetchUsers"
+    :current-page="currentPage"
+    @refresh="fetchPaginationUsers"
   />
 </template>
 
@@ -136,8 +137,8 @@
 
   const handleSearchUsers = debounce(handleSearchResult, 500);
 
-  async function fetchPaginationUsers() {
-    await userStore.fetchPaginationUsers();
+  async function fetchPaginationUsers(page = 1) {
+    await userStore.fetchPaginationUsers(page, PAGE_SIZE);
   }
 
   function openAddModal() {

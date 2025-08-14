@@ -19,7 +19,11 @@
   <div class="mt-4">
     <el-table :data="eventCategoriesStore.eventCategories" v-loading="eventCategoriesStore.loading">
       <el-table-column prop="name" label="Tên danh mục" />
-      <el-table-column prop="description" label="Mô tả" />
+      <el-table-column prop="description" label="Mô tả">
+        <template #default="{ row }">
+          <el-text line-clamp="2">{{ row.description }}</el-text>
+        </template>
+      </el-table-column>
       <el-table-column label="Trạng thái">
         <template #default="{ row }">
           <el-tag :type="row.status === 1 ? 'success' : 'danger'" effect="plain">

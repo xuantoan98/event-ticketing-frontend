@@ -21,7 +21,11 @@
       <el-table-column prop="name" label="Tên phòng ban" />
       <el-table-column prop="email" label="Email" show-overflow-tooltip />
       <el-table-column prop="phone" label="SĐT" />
-      <el-table-column prop="description" label="Mô tả" />
+      <el-table-column prop="description" label="Mô tả">
+        <template #default="{ row }">
+          <el-text line-clamp="2">{{ row.description }}</el-text>
+        </template>
+      </el-table-column>
       <el-table-column label="Trạng thái">
         <template #default="{ row }">
           <el-tag :type="row.status === 1 ? 'success' : 'danger'" effect="plain">

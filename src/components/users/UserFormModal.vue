@@ -104,7 +104,7 @@
 
     <template #footer>
       <el-button @click="emit('update:visible', false)">Hủy</el-button>
-      <el-button :loading="userStore.loading" type="primary" @click="submitForm">
+      <el-button :loading="loading" type="primary" @click="submitForm">
         {{ isEdit ? 'Cập nhật' : 'Lưu' }}
       </el-button>
     </template>
@@ -126,7 +126,8 @@
   // định nghĩa props visible: ẩn hiện modal, userData cho việc phân biệt modal add và update
   const props = defineProps({
     visible: Boolean,
-    userData: Object
+    userData: Object,
+    currentPage: Number
   });
 
   // định nghĩa các sự kiện cho modal
@@ -206,7 +207,7 @@
         }
 
         loading.value = false;
-        emit('refresh');
+        emit('refresh', props.currentPage);
         handleClose();
       } catch (error) {
         ElMessage.error(error.response?.data?.message || 'Đã xảy ra lỗi');
