@@ -58,13 +58,21 @@
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column prop="location" label="Địa chỉ" show-overflow-tooltip />
-      <!-- <el-table-column prop="description" label="Mô tả" show-overflow-tooltip /> -->
+      <!-- <el-table-column prop="location" label="Địa chỉ" show-overflow-tooltip /> -->
+
+      <el-table-column prop="" label="Người phụ trách">
+        <template #default="{row}">
+          {{ row.userCreated[0].name }}
+        </template>
+      </el-table-column>
 
       <el-table-column label="Hành động">
         <template #default="{ row }">
-          <el-button type="warning" size="small" @click="openEditModal(row)">Sửa</el-button>
+          <el-button v-if="auth.user.id === row.createdBy" type="warning" size="small" @click="openEditModal(row)">Sửa</el-button>
+          <el-button v-else type="primary" size="small" @click="openEditModal(row)">Xem</el-button>
+
           <el-button 
+            v-if="auth.user.id === row.createdBy"
             type="danger" 
             size="small" 
             @click="deleteEvent(row._id)"
@@ -105,6 +113,7 @@
   import EventFormModal from '../../components/events/EventFormModal.vue';
   import { debounce } from 'lodash';
   import { ElMessage, ElMessageBox } from 'element-plus';
+  import { useAuthStore } from '../../stores/auth';
 
   const eventStore = useEventStore();
   const currentPage = ref(DEFAULT_PAGE);
@@ -113,6 +122,7 @@
   const editingEvent = ref(null);
   const searchQuery = ref('');
   const deletingId = ref(null);
+  const auth = useAuthStore();  
 
   function getStatusInfo(status) {
     const statusMap = {
@@ -133,10 +143,6 @@
   function openEditModal(eventData) {
     showModal.value = true;
     editingEvent.value = eventData;
-    
-
-    console.log(eventData);
-    
   }
 
   async function deleteEvent(eventId) {

@@ -44,9 +44,9 @@
 
           <el-form-item label="Danh mục" prop="eventCategoriesId">
             <el-select 
-              v-model="form.eventCategoriesId" 
+              v-model="form.eventCategory" 
               placeholder="Danh mục" 
-              :key="form.eventCategoriesId" 
+              :key="form.eventCategory" 
               filterable
               multiple
               collapse-tags
@@ -301,7 +301,8 @@
     supporters: [],
     invites: [],
     costs: [],
-    supports: {}
+    supports: {},
+    eventCategory: []
   });
 
   const rules = {
