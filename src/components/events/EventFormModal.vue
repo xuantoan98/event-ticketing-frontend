@@ -176,10 +176,10 @@
             </div>
             <div class="flex items-center justify-between w-full gap-4">
               <el-select 
-                v-model="form.invites"
+                v-model="form.invites.inviteId"
                 v-show="showAddInvites"
                 placeholder="Khách mời" 
-                :key="form.invites" 
+                :key="form.invites.inviteId"
                 filterable
                 multiple
               >
@@ -355,19 +355,25 @@
             const eventCategoriesUpdate = form.eventCategoriesId.map(e => e._id ? e._id : e);
             payload.eventCategoriesId = eventCategoriesUpdate;
           }
-          
-          // ngời hỗ trợ
-          if (form.supporters.length > 0) {
-            const eventSupports = form.supporters.map(e => e._id ? e._id : e);
+
+          // người hỗ trợ
+          if (form.supports?.userId.length > 0) {
+            const eventSupports = form.supports.userId.map(e => e._id ? e._id : e);
             payload.supporters = eventSupports;
           }
           
           // khách mời
-          if (form.invites.length > 0) {
-            const eventInvites = form.invites.map(e => e._id ? e._id : e);
+          if (form.invites?.inviteId.length > 0) {
+            const eventInvites = form.invites.inviteId.map(e => e._id ? e._id : e);
             payload.invites = eventInvites;
           }
 
+          // Danh mục
+          if (form.eventCategory.length > 0) {
+            const eventCategories = form.eventCategory.map(e => e._id ? e._id : e);
+            payload.eventCategoriesId = eventCategories;
+          }
+          
           await eventStore.updateEvent(props.eventData?._id, payload);
           ElMessage.success('Cập nhật thành công');
         } else {          
@@ -462,6 +468,11 @@
         if (props.eventData.supports.userInfo.length > 0) {
           showAddSupporters.value = true;
         }
+
+        if (props.eventData.invites.inviteId.length > 0) {
+          showAddInvites.value = true;
+        }
+        
       } else {
         isEdit.value = false;
         resetForm();
