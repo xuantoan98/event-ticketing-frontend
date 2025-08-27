@@ -309,7 +309,7 @@
     title: [{ required: true, message: 'Tiêu đề là bắt buộc', trigger: 'blur' }],
     startDate: [{ required: true, message: 'Thời gian bắt đầu là bắt buộc', trigger: 'blur' }],
     endDate: [{ required: true, message: 'Thời gian kết thúc là bắt buộc', trigger: 'blur' }],
-    eventCategoriesId: [{ required: true, message: 'Danh mục sự kiện là bắt buộc', trigger: 'blur' }],
+    eventCategory: [{ required: true, message: 'Danh mục sự kiện là bắt buộc', trigger: 'blur' }],
     description: [{ required: true, message: 'Mô tả là bắt buộc', trigger: 'blur'}],
     // estimatePrice: [{ type: 'number', message: 'Chi phí dự kiến phải là số' },]
   };

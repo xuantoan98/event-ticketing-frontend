@@ -16,4 +16,8 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component);
 }
 
+app.config.errorHandler = (err, instance, info) => {
+  console.error("Vue error:", err, instance, info);
+};
+
 app.mount('#app');

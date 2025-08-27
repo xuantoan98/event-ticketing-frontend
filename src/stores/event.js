@@ -9,11 +9,24 @@ export const useEventStore = defineStore('event', {
     loading: false
   }),
   actions: {
-    async fetchEvents(page = DEFAULT_PAGE, limit = PAGE_SIZE, sortOrder = DEFAULT_SORT.order, q = '') {
+    async fetchEvents(params = {}) {
       try {
         this.loading = true;
+
+        const defaultParams = {
+          page: DEFAULT_PAGE,
+          limit: PAGE_SIZE,
+          sortOrder: DEFAULT_SORT.order,
+          q: '',
+          startDate: null,
+          endDate: null,
+          eventCategory: null
+        };
+
+        const finalParams = {...defaultParams, ...params}
+
         const response = await axios.get('/events', {
-          params: { page, limit, sortOrder, q }
+          params: finalParams
         });
 
         this.events = response.data.data || [];

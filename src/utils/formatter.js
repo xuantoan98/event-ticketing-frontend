@@ -30,3 +30,10 @@ export const formatRole = (role) => {
       return 'Khách mời';
   }
 }
+
+export const formatCurrencyVND = (value) => {
+  if (value == null) {
+    return '---';
+  }
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+}

@@ -16,6 +16,34 @@
     </div>
   </div>
 
+  <div class="mt-4 flex items-center gap-x-4">
+    <el-select 
+      v-model="searchTypeEvent" 
+      placeholder="Loại sự kiện" 
+      :key="searchTypeEvent"
+      @change="handleSearchTypeEvent"
+      style="max-width: 250px;"
+    >
+      <el-option
+        v-for="item in eventCategoriesOptions"
+        :key="item.id"
+        :label="item.name"
+        :value="item.id"
+      />
+    </el-select>
+
+    <el-date-picker
+      v-model="filterStartEndDate"
+      type="daterange"
+      range-separator="-"
+      start-placeholder="Bắt đầu"
+      end-placeholder="Kết thúc"
+      size="default"
+      style="max-width: 300px;"
+      @change="handleFilterDate"
+    />
+  </div>
+
   <div class="mt-4">
     <el-table :data="eventStore.events" v-loading="eventStore.loading">
       <el-table-column prop="coverImage" label="Ảnh sự kiện" width="110">
@@ -38,6 +66,20 @@
           </div>
         </template>
       </el-table-column>
+      <el-table-column prop="estimatePrice" label="Chi phí dự kiến (đ)">
+        <template #default="{ row }">
+          <div class="flex items-center gap-x-1">
+            {{ formatCurrencyVND(row.estimatePrice) }}
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="realPrice" label="Chi phí thực tế (đ)">
+        <template #default="{ row }">
+          <div class="flex items-center gap-x-1">
+            {{ formatCurrencyVND(row.realPrice) }}
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column prop="status" label="Trạng thái">
         <template #default="{ row }">
           <el-tag :type="getStatusInfo(row.status).type">
@@ -47,12 +89,12 @@
       </el-table-column>
       <el-table-column prop="eventCategoriesId" label="Danh mục">
         <template #default="{ row }">
-          <template v-for="(item, index) in row.eventCategory.slice(0,1)" :key="index">
+          <template v-for="(item, index) in row.eventCategory?.slice(0,1)" :key="index">
             <el-tag size="small" class="mr-1">{{ item.name }}</el-tag>
           </template>
-          <el-tooltip v-if="row.eventCategory.length > 1" placement="top">
+          <el-tooltip v-if="row.eventCategory && row.eventCategory.length > 1" placement="top">
             <template #content>
-              {{ row.eventCategory.slice(1).map(c => c.name).join(', ') }}
+              {{ row.eventCategory?.slice(1).map(c => c.name).join(', ') }}
             </template>
             <el-tag size="small" type="info">+{{ row.eventCategory.length - 1 }}</el-tag>
           </el-tooltip>
@@ -61,8 +103,8 @@
       <!-- <el-table-column prop="location" label="Địa chỉ" show-overflow-tooltip /> -->
 
       <el-table-column prop="" label="Người phụ trách">
-        <template #default="{row}">
-          {{ row.userCreated[0].name }}
+        <template #default="{ row }">
+          {{ row.userCreated?.name || 'Chưa có' }}
         </template>
       </el-table-column>
 
@@ -107,13 +149,14 @@
 <script setup>
   import { onMounted, ref, watch } from 'vue';
   import { useEventStore } from '../../stores/event';
-  import { DEFAULT_PAGE, DEFAULT_SORT, PAGE_SIZE } from '../../constants';
+  import { DEFAULT_PAGE, PAGE_SIZE } from '../../constants';
   import { AlarmClock, Clock, Search } from '@element-plus/icons-vue';
-  import { formatDateTime } from '../../utils/formatter';
+  import { formatDateTime, formatCurrencyVND } from '../../utils/formatter';
   import EventFormModal from '../../components/events/EventFormModal.vue';
   import { debounce } from 'lodash';
   import { ElMessage, ElMessageBox } from 'element-plus';
   import { useAuthStore } from '../../stores/auth';
+  import { useEventCategoriesStore } from '../../stores/eventCategories';
 
   const eventStore = useEventStore();
   const currentPage = ref(DEFAULT_PAGE);
@@ -121,8 +164,13 @@
   const showModal = ref(false);
   const editingEvent = ref(null);
   const searchQuery = ref('');
+  const searchTypeEvent = ref('');
+  const filterStartEndDate = ref('');
   const deletingId = ref(null);
-  const auth = useAuthStore();  
+  const eventCategoriesOptions = ref([]);
+
+  const auth = useAuthStore();
+  const eventCategoriesStore = useEventCategoriesStore();
 
   function getStatusInfo(status) {
     const statusMap = {
@@ -176,19 +224,61 @@
 
   async function handleSearchResult () {
     if (searchQuery.value.trim()) {
-      await eventStore.fetchEvents(currentPage.value, PAGE_SIZE, DEFAULT_SORT.order, searchQuery.value.trim());
+      await eventStore.fetchEvents({
+        q: searchQuery.value.trim(),
+        eventCategory: searchTypeEvent.value
+      });
     } else {
       fetchEvents();
     }
   }
 
-  const handleSearchEvent = debounce(handleSearchResult, 500)
+  const handleSearchEvent = debounce(handleSearchResult, 500);
+
+  const handleSearchTypeEvent = async () => {
+    if (searchTypeEvent.value) {
+      await eventStore.fetchEvents({
+        q: searchQuery.value.trim(),
+        eventCategory: searchTypeEvent.value
+      });
+    } else {
+      fetchEvents();
+    }
+  }
+
+  const handleFilterDate = async () => {
+    if (filterStartEndDate.value) {
+      const [startDate, endDate] = filterStartEndDate.value;
+
+      if (startDate && endDate) {
+        await eventStore.fetchEvents(
+          {
+            q: searchQuery.value.trim(),
+            eventCategory: searchTypeEvent.value,
+            startDate: startDate.toString(),
+            endDate: endDate.toString()
+          }
+        );
+      } else {
+        fetchEvents();
+      }
+    }
+  }
 
   watch(currentPage, (page) => {
-    eventStore.fetchEvents(page, PAGE_SIZE);
+    eventStore.fetchEvents({page: page, pageSize: PAGE_SIZE});
   });
 
-  onMounted(() => {
-    eventStore.fetchEvents(currentPage.value, PAGE_SIZE);
+  onMounted(async () => {
+    eventStore.fetchEvents({currentPage: currentPage.value, pageSize: PAGE_SIZE});
+
+    // khởi tạo danh sách loại sự kiện
+    const resultEventCategories = await eventCategoriesStore.fetchEventCategories();
+    eventCategoriesOptions.value = resultEventCategories.map((d) => {
+      return {
+        id: d._id,
+        name: d.name
+      }
+    });
   });
 </script>
