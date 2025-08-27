@@ -110,8 +110,8 @@
 
       <el-table-column label="Hành động">
         <template #default="{ row }">
-          <el-button v-if="auth.user.id === row.createdBy" type="warning" size="small" @click="openEditModal(row)">Sửa</el-button>
-          <el-button v-else type="primary" size="small" @click="openEditModal(row)">Xem</el-button>
+          <el-button v-if="auth.user.id === row.createdBy" type="warning" size="small" @click="openEditModal(row, true)">Sửa</el-button>
+          <el-button v-else type="primary" size="small" @click="openEditModal(row, false)">Xem</el-button>
 
           <el-button 
             v-if="auth.user.id === row.createdBy"
@@ -142,6 +142,7 @@
   <EventFormModal
     v-model:visible="showModal"
     :eventData="editingEvent"
+    :allow-update="allowUpdate"
     @refresh="fetchEvents"
   />
 </template>
@@ -168,6 +169,7 @@
   const filterStartEndDate = ref('');
   const deletingId = ref(null);
   const eventCategoriesOptions = ref([]);
+  const allowUpdate = ref(false);
 
   const auth = useAuthStore();
   const eventCategoriesStore = useEventCategoriesStore();
@@ -188,9 +190,10 @@
     editingEvent.value = null;
   }
 
-  function openEditModal(eventData) {
+  function openEditModal(eventData, isAllowUpdate = false) {
     showModal.value = true;
     editingEvent.value = eventData;
+    allowUpdate.value = isAllowUpdate;
   }
 
   async function deleteEvent(eventId) {

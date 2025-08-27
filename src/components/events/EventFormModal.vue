@@ -16,7 +16,7 @@
               class="flex items-center justify-center w-full h-full cursor-pointer group"
               @click="triggerFileSelect"
               >
-              <div class="flex flex-col items-center justify-center gap-4">
+              <div class="box-banner-image flex flex-col items-center justify-center gap-4" :disabled="!isAllowUpdate">
                 <el-icon size="large"><Plus /></el-icon>
                 <p>
                   Ảnh sự kiện
@@ -33,13 +33,14 @@
               ref="fileInput"
               class="hidden"
               @change="handleAvatarChange"
+              :disabled="!isAllowUpdate"
             />
           </div>
         </div>
 
         <div class="px-4 grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           <el-form-item label="Tiêu đề" prop="title">
-            <el-input v-model="form.title" placeholder="Tiêu đề sự kiện" />
+            <el-input v-model="form.title" placeholder="Tiêu đề sự kiện" :disabled="!isAllowUpdate" />
           </el-form-item>
 
           <el-form-item label="Danh mục" prop="eventCategoriesId">
@@ -51,6 +52,7 @@
               multiple
               collapse-tags
               collapse-tags-tooltip
+              :disabled="!isAllowUpdate"
             >
               <el-option
                 v-for="item in eventCategoriesOptions"
@@ -71,6 +73,7 @@
               format="HH:mm:ss YYYY-MM-DD"
               date-format="MMM DD, YYYY"
               time-format="HH:mm"
+              :disabled="!isAllowUpdate"
             />
           </el-form-item>
           <el-form-item label="Thời gian kết thúc" prop="endDate">
@@ -81,13 +84,14 @@
               format="HH:mm:ss YYYY-MM-DD"
               date-format="MMM DD, YYYY"
               time-format="HH:mm"
+              :disabled="!isAllowUpdate"
             />
           </el-form-item>
         </div>
 
         <div class="px-4">
            <el-form-item label="Mô tả" prop="description">
-            <el-mention type="textarea" v-model="form.description" placeholder="Mô tả" />
+            <el-mention type="textarea" v-model="form.description" placeholder="Mô tả" :disabled="!isAllowUpdate" />
           </el-form-item>
         </div>
       </div>
@@ -102,7 +106,7 @@
 
         <div class="px-4">
           <el-form-item label="Địa chỉ" prop="location">
-            <el-mention type="textarea" v-model="form.location" placeholder="Nhập địa chỉ rõ ràng..." />
+            <el-mention type="textarea" v-model="form.location" placeholder="Nhập địa chỉ rõ ràng..." :disabled="!isAllowUpdate"  />
           </el-form-item>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -271,7 +275,8 @@
   // định nghĩa props visible: ẩn hiện modal, inviteData cho việc phân biệt modal add và update
   const props = defineProps({
     visible: Boolean,
-    eventData: Object
+    eventData: Object,
+    allowUpdate: Boolean
   });
 
   const eventCategoriesOptions = ref([]);
@@ -279,6 +284,7 @@
   const inviteOptions = ref([]);
 
   const isEdit = ref(false);
+  const isAllowUpdate = ref(false);
   const loading = ref(false);
   const formRef = ref();
   const fileInput = ref(null);
@@ -460,6 +466,8 @@
         isEdit.value = false;
         resetForm();
       }
+
+      isAllowUpdate.value = props.allowUpdate;
     }
   );
 
@@ -514,5 +522,10 @@
 
   .el-form-item__content .el-textarea__inner {
     height: 100px;
+  }
+
+  .box-banner-image[disabled="true"] {
+    pointer-events: none;
+    opacity: 0.6;
   }
 </style>
