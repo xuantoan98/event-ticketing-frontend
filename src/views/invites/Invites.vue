@@ -24,6 +24,11 @@
       <!-- <el-table-column prop="fax" label="Số fax" /> -->
       <el-table-column prop="organization" label="Cơ quan" show-overflow-tooltip />
       <!-- <el-table-column prop="description" label="Mô tả" /> -->
+      <el-table-column prop="createAt" label="Ngày tạo">
+        <template #default="{ row }">
+          {{ formatDate(row.createdAt) }}
+        </template>
+      </el-table-column>
       <el-table-column label="Trạng thái">
         <template #default="{ row }">
           <el-tag :type="row.status === 1 ? 'success' : 'danger'" effect="plain">
@@ -79,6 +84,7 @@
   import { DEFAULT_PAGE, DEFAULT_SORT, PAGE_SIZE } from '../../constants';
   import { ElMessage, ElMessageBox } from 'element-plus';
   import { useAuthStore } from '../../stores/auth';
+import { formatDate, toLocal } from '../../utils/dateUtils';
 
   const inviteStore = useInviteStore();
   const auth = useAuthStore();

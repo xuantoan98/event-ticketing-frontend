@@ -31,6 +31,11 @@
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column prop="createAt" label="Ngày tạo">
+        <template #default="{ row }">
+          {{ formatDate(row.createdAt) }}
+        </template>
+      </el-table-column>
       <el-table-column label="Hành động">
         <template #default="{ row }">
 
@@ -80,6 +85,7 @@
   import EventCategoriesFormModal from '../../components/event-categories/EventCategoriesFormModal.vue';
   import { ElMessage, ElMessageBox } from 'element-plus';
   import { useAuthStore } from '../../stores/auth';
+import { formatDate, toLocal } from '../../utils/dateUtils';
 
   const eventCategoriesStore = useEventCategoriesStore();
   const auth = useAuthStore();

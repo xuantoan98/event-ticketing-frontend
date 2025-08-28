@@ -58,12 +58,19 @@
         <template #default="{ row }">
           <div class="flex items-center gap-x-1">
             <el-icon><Clock /></el-icon>
-            {{ formatDateTime(row.startDate) }}
+            {{ toLocal(row.startDate) }}
           </div>
           <div class="flex items-center gap-x-1">
             <el-icon><AlarmClock /></el-icon>
-            {{ formatDateTime(row.endDate) }}
+            {{ toLocal(row.endDate) }}
           </div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="status" label="Trạng thái">
+        <template #default="{ row }">
+          <el-tag :type="getStatusInfo(row.status).type">
+            {{ getStatusInfo(row.status).label }}
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="estimatePrice" label="Chi phí dự kiến (đ)">
@@ -78,13 +85,6 @@
           <div class="flex items-center gap-x-1">
             {{ formatCurrencyVND(row.realPrice) }}
           </div>
-        </template>
-      </el-table-column>
-      <el-table-column prop="status" label="Trạng thái">
-        <template #default="{ row }">
-          <el-tag :type="getStatusInfo(row.status).type">
-            {{ getStatusInfo(row.status).label }}
-          </el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="eventCategoriesId" label="Danh mục">
@@ -152,12 +152,14 @@
   import { useEventStore } from '../../stores/event';
   import { DEFAULT_PAGE, PAGE_SIZE } from '../../constants';
   import { AlarmClock, Clock, Search } from '@element-plus/icons-vue';
-  import { formatDateTime, formatCurrencyVND } from '../../utils/formatter';
+  import { formatCurrencyVND } from '../../utils/formatter';
   import EventFormModal from '../../components/events/EventFormModal.vue';
   import { debounce } from 'lodash';
   import { ElMessage, ElMessageBox } from 'element-plus';
   import { useAuthStore } from '../../stores/auth';
   import { useEventCategoriesStore } from '../../stores/eventCategories';
+  import { toLocal, toUTC } from '../../utils/dateUtils';
+  import dayjs from "dayjs";
 
   const eventStore = useEventStore();
   const currentPage = ref(DEFAULT_PAGE);
@@ -223,7 +225,7 @@
   }
 
   const fetchEvents = async () => {
-    await eventStore.fetchEvents();
+    await eventStore.fetchEvents({page: page, pageSize: PAGE_SIZE});
   }
 
   async function handleSearchResult () {
@@ -259,13 +261,15 @@
           {
             q: searchQuery.value.trim(),
             eventCategory: searchTypeEvent.value,
-            startDate: startDate.toString(),
-            endDate: endDate.toString()
+            startDate: dayjs(startDate).startOf("day").format("YYYY-MM-DDTHH:mm:ss[Z]"),
+            endDate: dayjs(endDate).endOf("day").format("YYYY-MM-DDTHH:mm:ss[Z]")
           }
         );
       } else {
         fetchEvents();
       }
+    } else {
+      fetchEvents();
     }
   }
 

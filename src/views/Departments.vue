@@ -33,6 +33,11 @@
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column prop="createAt" label="Ngày tạo">
+        <template #default="{ row }">
+          {{ formatDate(row.createdAt) }}
+        </template>
+      </el-table-column>
       <el-table-column label="Hành động">
         <template #default="{ row }">
           <el-button v-if="auth.user.id === row.createdBy || auth.user.role === 'admin'" type="warning" size="small" @click="openEditModal(row, true)">Sửa</el-button>
@@ -81,6 +86,7 @@
   import { ElMessage, ElMessageBox } from 'element-plus';
   import { useAuthStore } from '../stores/auth';
   import { DEFAULT_PAGE, PAGE_SIZE } from '../constants';
+import { formatDate } from '../utils/dateUtils';
 
   const departmentStore = useDepartmentStore();
   const auth = useAuthStore();

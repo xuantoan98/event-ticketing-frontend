@@ -70,9 +70,7 @@
               v-model="form.startDate"
               type="datetime"
               placeholder="Thời gian bắt đầu"
-              format="HH:mm:ss YYYY-MM-DD"
-              date-format="MMM DD, YYYY"
-              time-format="HH:mm"
+              value-format="YYYY-MM-DDTHH:mm:ssZ"
               :disabled="!isAllowUpdate"
             />
           </el-form-item>
@@ -81,9 +79,7 @@
               v-model="form.endDate"
               type="datetime"
               placeholder="Thời gian kết thúc"
-              format="HH:mm:ss YYYY-MM-DD"
-              date-format="MMM DD, YYYY"
-              time-format="HH:mm"
+              value-format="YYYY-MM-DDTHH:mm:ssZ"
               :disabled="!isAllowUpdate"
             />
           </el-form-item>
@@ -382,7 +378,7 @@
         handleClose();
       } catch (error) {
         loading.value = false;
-        console.error(error);
+        ElMessage.error(error.response?.data?.message || 'Đã xảy ra lỗi');
       }
     })
   }
