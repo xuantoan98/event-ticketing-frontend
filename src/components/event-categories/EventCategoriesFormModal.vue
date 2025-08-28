@@ -8,22 +8,22 @@
   >
     <el-form :model="form" :rules="rules" ref="formRef" label-width="auto" label-position="top">
       <el-form-item label="Tên danh mục" prop="name">
-        <el-input v-model="form.name" />
+        <el-input v-model="form.name" :disabled="!isAllowUpdate" />
       </el-form-item>
       <el-form-item label="Trạng thái" prop="status">
-        <el-select v-model="form.status" placeholder="Trạng thái" :key="form.status">
+        <el-select v-model="form.status" placeholder="Trạng thái" :key="form.status" :disabled="!isAllowUpdate">
           <el-option label="Hoạt động" :value="1" />
           <el-option label="Ngưng hoạt động" :value="0" />
         </el-select>
       </el-form-item>
       <el-form-item label="Mô tả">
-        <el-input type="textarea" v-model="form.description" />
+        <el-input type="textarea" v-model="form.description" :disabled="!isAllowUpdate" />
       </el-form-item>
     </el-form>
 
     <template #footer>
       <el-button @click="emit('update:visible', false)">Hủy</el-button>
-      <el-button type="primary" @click="submitForm">
+      <el-button type="primary" @click="submitForm" :disabled="!isAllowUpdate">
         {{ isEdit ? 'Cập nhật' : 'Lưu' }}
       </el-button>
     </template>
@@ -38,7 +38,8 @@
   const eventCategoriesStore = useEventCategoriesStore();
   const props = defineProps({
     visible: Boolean,
-    eventCategory: Object
+    eventCategory: Object,
+    allowUpdate: Boolean
   });
 
   const emit = defineEmits(['update:visible', 'refresh']);
@@ -49,6 +50,7 @@
     description: '',
     status: 1
   });
+  const isAllowUpdate = ref(false);
 
   const rules = {
     name: [{ required: true, message: 'Tên danh mục là bắt buộc', trigger: 'blur' }]
@@ -102,6 +104,8 @@
       } else {
         resetForm();
       }
+
+      isAllowUpdate.value = props.allowUpdate;
     }
   );
 </script>

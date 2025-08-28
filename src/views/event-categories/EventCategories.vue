@@ -33,13 +33,17 @@
       </el-table-column>
       <el-table-column label="Hành động">
         <template #default="{ row }">
-          <el-button type="warning" size="small" @click="openEditModal(row)">Sửa</el-button>
-          <el-button 
+
+          <el-button v-if="auth.user.id === row.createdBy" type="warning" size="small" @click="openEditModal(row, true)">Sửa</el-button>
+          <el-button v-else type="primary" size="small" @click="openEditModal(row, false)">Xem</el-button>
+          <el-button
+            v-if="auth.user.id === row.createdBy"
             type="danger" 
             size="small" 
             @click="deleteEventCategory(row._id)"
             :loading="deletingId === row._id"
           >Xóa</el-button>
+
         </template>
       </el-table-column>
       <template #empty>
@@ -62,6 +66,7 @@
   <EventCategoriesFormModal 
     v-model:visible="showModal"
     :eventCategory="editingEventCategory"
+    :allow-update="allowUpdate"
     @refresh="fetchEventCategories"
   />
 
@@ -74,8 +79,10 @@
   import { Search } from '@element-plus/icons-vue';
   import EventCategoriesFormModal from '../../components/event-categories/EventCategoriesFormModal.vue';
   import { ElMessage, ElMessageBox } from 'element-plus';
+  import { useAuthStore } from '../../stores/auth';
 
   const eventCategoriesStore = useEventCategoriesStore();
+  const auth = useAuthStore();
 
   const currentPage = ref(1);
   const pageSize = 10;
@@ -83,6 +90,7 @@
   const deletingId = ref(null);
   const showModal = ref(false);
   const editingEventCategory = ref(null);
+  const allowUpdate = ref(false);
 
   const fetchEventCategories = async () => {
     await eventCategoriesStore.fetchEventCategories();
@@ -94,14 +102,16 @@
     await eventCategoriesStore.fetchEventCategories(1, 10, 'desc', searchQuery.value.trim());
   }
 
-  function openAddModal () {
+  function openAddModal() {
     editingEventCategory.value = null; // tạo mới
     showModal.value = true;
+    allowUpdate.value = true;
   }
 
-  function openEditModal(eventCategory) {
+  function openEditModal(eventCategory, isAllowUpdate = false) {
     editingEventCategory.value = {...eventCategory}; // cập nhật
     showModal.value = true;
+    allowUpdate.value = isAllowUpdate;
   }
 
   async function deleteEventCategory(id) {
