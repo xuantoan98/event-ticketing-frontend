@@ -9,27 +9,27 @@
     <el-form :model="form" :rules="rules" ref="formRef" label-width="auto" label-position="top">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <el-form-item label="Tên khách mời" prop="name">
-          <el-input v-model="form.name" placeholder="Tên khách mời" />
+          <el-input v-model="form.name" placeholder="Tên khách mời" :disabled="!allowUpdate"/>
         </el-form-item>
         <el-form-item label="Email" prop="email">
-          <el-input v-model="form.email" placeholder="Email" />
+          <el-input v-model="form.email" placeholder="Email" :disabled="!allowUpdate" />
         </el-form-item>
       </div>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <el-form-item label="Số điện thoại" prop="phone">
-          <el-input v-model="form.phone" placeholder="Số điện thoại" />
+          <el-input v-model="form.phone" placeholder="Số điện thoại" :disabled="!allowUpdate" />
         </el-form-item>
         <el-form-item label="Fax" prop="fax">
-          <el-input v-model="form.fax" placeholder="Số fax" />
+          <el-input v-model="form.fax" placeholder="Số fax" :disabled="!allowUpdate" />
         </el-form-item>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <el-form-item label="Cơ quan" prop="organization">
-          <el-input v-model="form.organization" placeholder="Cơ quan" />
+          <el-input v-model="form.organization" placeholder="Cơ quan" :disabled="!allowUpdate" />
         </el-form-item>
         <el-form-item label="Trạng thái" prop="status">
-          <el-select v-model="form.status" placeholder="Trạng thái" :key="form.status">
+          <el-select v-model="form.status" placeholder="Trạng thái" :key="form.status" :disabled="!allowUpdate">
             <el-option label="Hoạt động" :value="1" />
             <el-option label="Ngưng hoạt động" :value="0" />
           </el-select>
@@ -42,7 +42,7 @@
 
     <template #footer>
       <el-button @click="emit('update:visible', false)">Hủy</el-button>
-      <el-button type="primary" @click="submitForm">
+      <el-button type="primary" @click="submitForm" :disabled="!allowUpdate">
         {{ isEdit ? 'Cập nhật' : 'Lưu' }}
       </el-button>
     </template>
@@ -59,7 +59,9 @@
   // định nghĩa props visible: ẩn hiện modal, inviteData cho việc phân biệt modal add và update
   const props = defineProps({
     visible: Boolean,
-    inviteData: Object
+    inviteData: Object,
+    isAllowUpdate: Boolean,
+    currentPage: Number
   });
 
   // định nghĩa các sự kiện cho modal
@@ -67,6 +69,7 @@
 
   // định nghĩa các biến phản ứng (ref, reactive)
   const isEdit = ref(false);
+  const allowUpdate = ref(false);
   const formRef = ref();
   const form = reactive({
     name: '',
@@ -98,7 +101,7 @@
           ElMessage.success('Thêm mới thành công');
         }
 
-        emit('refresh');
+        emit('refresh', props.currentPage);
         handleClose();
       } catch (error) {
         ElMessage.error(error.response?.data?.message || 'Đã xảy ra lỗi');
@@ -133,6 +136,8 @@
       } else {
         resetForm();
       }
+
+      allowUpdate.value = props.isAllowUpdate;
     }
   );
 </script>

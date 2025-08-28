@@ -110,11 +110,11 @@
 
       <el-table-column label="Hành động">
         <template #default="{ row }">
-          <el-button v-if="auth.user.id === row.createdBy" type="warning" size="small" @click="openEditModal(row, true)">Sửa</el-button>
+          <el-button v-if="auth.user.id === row.createdBy || auth.user.role === 'admin'" type="warning" size="small" @click="openEditModal(row, true)">Sửa</el-button>
           <el-button v-else type="primary" size="small" @click="openEditModal(row, false)">Xem</el-button>
 
           <el-button 
-            v-if="auth.user.id === row.createdBy"
+            v-if="auth.user.id === row.createdBy || auth.user.role === 'admin'"
             type="danger" 
             size="small" 
             @click="deleteEvent(row._id)"

@@ -3,7 +3,7 @@ import { PieChart, Calendar, Stamp, User, Menu } from '@element-plus/icons-vue';
 export const routeDefinitions = [
   {
     path: 'dashboard',
-    label: 'Báo cáo thông kê',
+    label: 'Báo cáo thống kê',
     icon: PieChart,
     component: () => import('../views/Dashboard.vue') // Sử dụng import động để lazy load
   },

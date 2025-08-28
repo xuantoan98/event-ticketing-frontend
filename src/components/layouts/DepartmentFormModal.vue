@@ -113,8 +113,6 @@
 
         emit('refresh', props.currentPage);
         handleClose();
-        console.log('debug: ', props.currentPage);
-        
       } catch (error) {
         ElMessage.error(error.response?.data?.message || 'Đã xảy ra lỗi');
       }

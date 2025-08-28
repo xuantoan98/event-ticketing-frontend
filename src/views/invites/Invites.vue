@@ -33,10 +33,12 @@
       </el-table-column>
       <el-table-column label="Hành động">
         <template #default="{ row }">
-          <el-button type="warning" size="small" @click="openEditModal(row)">Sửa</el-button>
-          <el-button 
+          <el-button v-if="auth.user.id === row.createdBy || auth.user.role === 'admin'" type="warning" size="small" @click="openEditModal(row, true)">Sửa</el-button>
+          <el-button v-else type="primary" size="small" @click="openEditModal(row, false)">Xem</el-button>
+          <el-button
+            v-if="auth.user.id === row.createdBy || auth.user.role === 'admin'"
             type="danger" 
-            size="small" 
+            size="small"
             @click="deleteInvite(row._id)"
             :loading="deletingId === row._id"
           >Xóa</el-button>
@@ -61,6 +63,8 @@
 
   <InviteFormModal 
     v-model:visible="showModal"
+    :is-allow-update="allowUpdate"
+    :current-page="currentPage"
     :inviteData="editingInvite"
     @refresh="fetchInvites"
   />
@@ -74,8 +78,10 @@
   import InviteFormModal from '../../components/invites/InviteFormModal.vue';
   import { DEFAULT_PAGE, DEFAULT_SORT, PAGE_SIZE } from '../../constants';
   import { ElMessage, ElMessageBox } from 'element-plus';
+  import { useAuthStore } from '../../stores/auth';
 
   const inviteStore = useInviteStore();
+  const auth = useAuthStore();
 
   const searchQuery = ref('');
   const showModal = ref(false);
@@ -83,6 +89,7 @@
   const currentPage = ref(DEFAULT_PAGE);
   const pageSize = ref(PAGE_SIZE);
   const deletingId = ref(null);
+  const allowUpdate = ref(false);
 
   async function handleSearchResult() {
     if (searchQuery.value.trim()) {
@@ -98,11 +105,13 @@
   function openAddModal() {
     editingInvite.value = null;
     showModal.value = true;
+    allowUpdate.value = true;
   }
 
-  function openEditModal(invite) {    
+  function openEditModal(invite, isAllowUpdate = false) {    
     editingInvite.value = invite;
     showModal.value = true;
+    allowUpdate.value = isAllowUpdate;
   }
 
   async function deleteInvite(inviteId) {
@@ -131,7 +140,7 @@
   }
 
   const fetchInvites = async () => {
-    await inviteStore.getInvites();
+    await inviteStore.getInvites(currentPage.value, pageSize.value);
   }
 
   watch(currentPage, (page) => {
