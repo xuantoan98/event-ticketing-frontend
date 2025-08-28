@@ -9,16 +9,16 @@
     <el-form :model="form" :rules="rules" ref="formRef" label-width="auto" label-position="top">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <el-form-item label="Họ và tên" prop="name">
-          <el-input v-model="form.name" placeholder="Họ và tên" />
+          <el-input v-model="form.name" placeholder="Họ và tên" :disabled="!allowUpdate" />
         </el-form-item>
         <el-form-item label="Email" prop="email">
-          <el-input v-model="form.email" placeholder="Email" />
+          <el-input v-model="form.email" placeholder="Email" :disabled="!allowUpdate" />
         </el-form-item>
       </div>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <el-form-item label="Số điện thoại" prop="phone">
-          <el-input v-model="form.phone" placeholder="Số điện thoại"/>
+          <el-input v-model="form.phone" placeholder="Số điện thoại" :disabled="!allowUpdate"/>
         </el-form-item>
         <el-form-item label="Ngày sinh" prop="dateOfBirth">
           <el-date-picker
@@ -26,12 +26,13 @@
               type="date"
               placeholder="Ngày sinh"
               style="width: 100%;"
+              :disabled="!allowUpdate"
             />
         </el-form-item>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <el-form-item label="Giới tính" prop="gender">
-          <el-select v-model="form.gender" placeholder="Giới tính">
+          <el-select v-model="form.gender" placeholder="Giới tính" :disabled="!allowUpdate">
             <el-option
               v-for="item in genderOptionsStore.genderOptions"
               :key="item.value"
@@ -41,7 +42,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="Trạng thái" prop="status">
-          <el-select v-model="form.status" placeholder="Trạng thái" :key="form.status">
+          <el-select v-model="form.status" placeholder="Trạng thái" :key="form.status" :disabled="!allowUpdate">
             <el-option label="Hoạt động" :value="1" />
             <el-option label="Ngưng hoạt động" :value="0" />
           </el-select>
@@ -50,7 +51,7 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <el-form-item label="Phòng ban" prop="departmentId">
-          <el-select v-model="form.departmentId" placeholder="Phòng ban" :key="form.departmentId" filterable>
+          <el-select v-model="form.departmentId" placeholder="Phòng ban" :key="form.departmentId" filterable :disabled="!allowUpdate">
             <el-option
               v-for="item in departmentOptions"
               :key="item.id"
@@ -60,7 +61,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="Chức vụ" prop="role">
-          <el-select v-model="form.role" placeholder="Chức vụ" :key="form.role">
+          <el-select v-model="form.role" placeholder="Chức vụ" :key="form.role" :disabled="!allowUpdate">
             <el-option label="Nhân viên" value="employee" />
             <el-option label="Khách mời" value="customer" />
           </el-select>
@@ -89,6 +90,7 @@
           accept="image/png, image/jpeg"
           ref="fileInput"
           class="hidden"
+          :disabled="!allowUpdate"
           @change="handleAvatarChange"
         />
       </div>
@@ -98,13 +100,14 @@
           type="textarea"
           style="width: 100%"
           placeholder="Địa chỉ"
+          :disabled="!allowUpdate"
         />
       </div>
     </el-form>
 
     <template #footer>
       <el-button @click="emit('update:visible', false)">Hủy</el-button>
-      <el-button :loading="loading" type="primary" @click="submitForm">
+      <el-button :loading="loading" type="primary" @click="submitForm" :disabled="!allowUpdate">
         {{ isEdit ? 'Cập nhật' : 'Lưu' }}
       </el-button>
     </template>
@@ -127,7 +130,8 @@
   const props = defineProps({
     visible: Boolean,
     userData: Object,
-    currentPage: Number
+    currentPage: Number,
+    isAllowUpdate: Boolean
   });
 
   // định nghĩa các sự kiện cho modal
@@ -140,6 +144,7 @@
   // const avatarUrl = ref(authStore.user.avatar || 'src/assets/default-avatar-icon.jpg');
   const avatarFile = ref(null);
   const avatarPreviewUrl = ref(null);
+  const allowUpdate = ref(false);
   const form = reactive({
     name: '',
     email: '',
@@ -259,6 +264,8 @@
         isEdit.value = false;
         resetForm();
       }
+
+      allowUpdate.value = props.isAllowUpdate;
     }
   );
 

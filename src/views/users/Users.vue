@@ -66,8 +66,10 @@
       </el-table-column>
       <el-table-column label="Hành động">
         <template #default="{ row }">
-          <el-button type="warning" size="small" @click="openEditModal(row)">Sửa</el-button>
-          <el-button 
+          <el-button v-if="auth.user.id === row.createdBy" type="warning" size="small" @click="openEditModal(row, true)">Sửa</el-button>
+          <el-button v-else type="primary" size="small" @click="openEditModal(row, false)">xem</el-button>
+          <el-button
+            v-if="auth.user.id === row.createdBy"
             type="danger" 
             size="small" 
             @click="deleteUser(row._id)"
@@ -97,6 +99,7 @@
     v-model:visible="showModal"
     :userData="editingUser"
     :current-page="currentPage"
+    :is-allow-update="allowUpdate"
     @refresh="fetchPaginationUsers"
   />
 </template>
@@ -110,14 +113,17 @@
   import UserFormModal from '../../components/users/UserFormModal.vue';
   import { debounce } from 'lodash';
   import { ElMessage, ElMessageBox } from 'element-plus';
+  import { useAuthStore } from '../../stores/auth';
 
   const userStore = useUserStore();
+  const auth = useAuthStore();
   const currentPage = ref(DEFAULT_PAGE);
   const pageSize = ref(PAGE_SIZE);
   const showModal = ref(false);
   const editingUser = ref(null);
   const searchQuery = ref('');
   const deletingId = ref(null);
+  const allowUpdate = ref(false);
 
   onMounted(() => {
     userStore.fetchPaginationUsers(currentPage.value, PAGE_SIZE);
@@ -144,11 +150,13 @@
   function openAddModal() {
     showModal.value = true;
     editingUser.value = null;
+    allowUpdate.value = true;
   }
 
-  function openEditModal(user) {
+  function openEditModal(user, isAllowUpdate = false) {
     editingUser.value = { ...user };
     showModal.value = true;
+    allowUpdate.value = isAllowUpdate;
   }
 
   const fetchUsers = async () => {
