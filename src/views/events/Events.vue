@@ -188,6 +188,7 @@
   function openAddModal() {
     showModal.value = true;
     editingEvent.value = null;
+    allowUpdate.value = true;
   }
 
   function openEditModal(eventData, isAllowUpdate = false) {

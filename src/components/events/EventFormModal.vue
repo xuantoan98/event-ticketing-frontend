@@ -43,7 +43,7 @@
             <el-input v-model="form.title" placeholder="Tiêu đề sự kiện" :disabled="!isAllowUpdate" />
           </el-form-item>
 
-          <el-form-item label="Danh mục" prop="eventCategoriesId">
+          <el-form-item label="Danh mục" prop="eventCategory">
             <el-select 
               v-model="form.eventCategory" 
               placeholder="Danh mục" 
@@ -123,8 +123,11 @@
               <!-- <el-input-number v-model="form.estimatePrice" controls-position="right" placeholder="0"  /> -->
             </el-form-item>
 
-            <el-form-item label="Chỗ ngồi" prop="isLimitSeat">
-              <el-radio-group v-model="form.isLimitSeat" @change="handleDisplayEnterLimitSeats">
+            <el-form-item label="Chỗ ngồi">
+              <el-radio-group
+                v-model="form.isLimitSeat" 
+                @change="handleDisplayEnterLimitSeats"
+              >
                 <el-radio :value="0" border>Không giới hạn</el-radio>
                 <el-radio :value="1" border>Giới hạn</el-radio>
               </el-radio-group>
@@ -321,11 +324,10 @@
   };
 
   async function submitForm() {
-    loading.value = true;
-
     formRef.value.validate(async (valid) => {
       if (!valid) return;
       try {
+        loading.value = true;
         let coverImagePath = form.coverImage;
 
         if (coverImageFile.value) {
@@ -349,34 +351,28 @@
           coverImage: coverImagePath,
         }
 
+        if (form.eventCategory.length > 0) {
+          const eventCategories = form.eventCategory.map(e => e._id ? e._id : e);
+          payload.eventCategoriesId = eventCategories;
+        }
+
         if (isEdit.value && props.eventData?._id) {
-          // nếu là update thì cần modify lại dữ liệu danh mục, người hỗ trợ và khách mời  
-          if (form.eventCategoriesId.length > 0) {
-            const eventCategoriesUpdate = form.eventCategoriesId.map(e => e._id ? e._id : e);
-            payload.eventCategoriesId = eventCategoriesUpdate;
-          }
 
           // người hỗ trợ
-          if (form.supports?.userId.length > 0) {
+          if (form.supports?.userId && form.supports?.userId.length > 0) {
             const eventSupports = form.supports.userId.map(e => e._id ? e._id : e);
             payload.supporters = eventSupports;
           }
           
           // khách mời
-          if (form.invites?.inviteId.length > 0) {
+          if (form.invites?.inviteId && form.invites?.inviteId.length > 0) {
             const eventInvites = form.invites.inviteId.map(e => e._id ? e._id : e);
             payload.invites = eventInvites;
-          }
-
-          // Danh mục
-          if (form.eventCategory.length > 0) {
-            const eventCategories = form.eventCategory.map(e => e._id ? e._id : e);
-            payload.eventCategoriesId = eventCategories;
           }
           
           await eventStore.updateEvent(props.eventData?._id, payload);
           ElMessage.success('Cập nhật thành công');
-        } else {          
+        } else {
           await eventStore.addEvent(payload);
           ElMessage.success('Thêm mới thành công');
         }
@@ -385,6 +381,7 @@
         emit('refresh');
         handleClose();
       } catch (error) {
+        loading.value = false;
         console.error(error);
       }
     })
@@ -469,10 +466,15 @@
           showAddSupporters.value = true;
         }
 
-        if (props.eventData.invites.inviteId.length > 0) {
+        if (props.eventData.invites?.inviteId.length > 0) {
           showAddInvites.value = true;
         }
-        
+
+        if (props.eventData.isLimitSeat === 1) {
+          isLimitSeats.value = true;
+        } else {
+          isLimitSeats.value = false;
+        }
       } else {
         isEdit.value = false;
         resetForm();
