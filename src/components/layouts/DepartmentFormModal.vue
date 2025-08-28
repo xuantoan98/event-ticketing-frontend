@@ -8,28 +8,28 @@
   >
     <el-form :model="form" :rules="rules" ref="formRef" label-width="auto" label-position="top">
       <el-form-item label="Tên phòng ban" prop="name">
-        <el-input v-model="form.name" />
+        <el-input v-model="form.name" :disabled="!allowUpdate" />
       </el-form-item>
       <el-form-item label="Email" prop="email">
-        <el-input v-model="form.email" />
+        <el-input v-model="form.email" :disabled="!allowUpdate" />
       </el-form-item>
       <el-form-item label="Số điện thoại" prop="phone">
-        <el-input v-model="form.phone" />
+        <el-input v-model="form.phone" :disabled="!allowUpdate" />
       </el-form-item>
       <el-form-item label="Trạng thái" prop="status">
-        <el-select v-model="form.status" placeholder="Trạng thái">
+        <el-select v-model="form.status" placeholder="Trạng thái" :disabled="!allowUpdate">
           <el-option label="Hoạt động" :value="1" />
           <el-option label="Ngưng hoạt động" :value="0" />
         </el-select>
       </el-form-item>
       <el-form-item label="Mô tả">
-        <el-input type="textarea" v-model="form.description" />
+        <el-input type="textarea" v-model="form.description" :disabled="!allowUpdate" />
       </el-form-item>
     </el-form>
 
     <template #footer>
       <el-button @click="emit('update:visible', false)">Hủy</el-button>
-      <el-button type="primary" @click="submitForm">
+      <el-button type="primary" @click="submitForm" :disabled="!allowUpdate">
         {{ isEdit ? 'Cập nhật' : 'Lưu' }}
       </el-button>
     </template>
@@ -44,12 +44,15 @@
   const departmentStore = useDepartmentStore();
   const props = defineProps({
     visible: Boolean,
-    department: Object
+    department: Object,
+    isAllowUpdate: Boolean,
+    currentPage: Number
   });
 
   const emit = defineEmits(['update:visible', 'refresh']);
   const isEdit = ref(false);
   const formRef = ref();
+  const allowUpdate = ref(false);
   const form = reactive({
     name: '',
     email: '',
@@ -74,6 +77,8 @@
     } else {
       resetForm();
     }
+
+    allowUpdate.value = props.isAllowUpdate;
   });
 
   function resetForm() {
@@ -106,8 +111,10 @@
           ElMessage.success('Thêm mới thành công');
         }
 
-        emit('refresh');
+        emit('refresh', props.currentPage);
         handleClose();
+        console.log('debug: ', props.currentPage);
+        
       } catch (error) {
         ElMessage.error(error.response?.data?.message || 'Đã xảy ra lỗi');
       }

@@ -35,8 +35,10 @@
       </el-table-column>
       <el-table-column label="Hành động">
         <template #default="{ row }">
-          <el-button type="warning" size="small" @click="openEditModal(row)">Sửa</el-button>
-          <el-button 
+          <el-button v-if="auth.user.id === row.createdBy" type="warning" size="small" @click="openEditModal(row, true)">Sửa</el-button>
+          <el-button v-else type="primary" size="small" @click="openEditModal(row, false)">Xem</el-button>
+          <el-button
+            v-if="auth.user.id === row.createdBy"
             type="danger" 
             size="small" 
             @click="deleteDepartment(row._id)"
@@ -64,6 +66,8 @@
   <DepartmentFormModal
     v-model:visible="showModal"
     :department="editingDepartment"
+    :is-allow-update="allowUpdate"
+    :current-page="currentPage"
     @refresh="fetchDepartments"
   />
 </template>
@@ -75,15 +79,19 @@
   import { Search } from '@element-plus/icons-vue';
   import { debounce } from 'lodash';
   import { ElMessage, ElMessageBox } from 'element-plus';
+  import { useAuthStore } from '../stores/auth';
+  import { DEFAULT_PAGE, PAGE_SIZE } from '../constants';
 
   const departmentStore = useDepartmentStore();
+  const auth = useAuthStore();
 
-  const currentPage = ref(1);
-  const pageSize = 10;
+  const currentPage = ref(DEFAULT_PAGE);
+  const pageSize = PAGE_SIZE;
   const showModal = ref(false);
   const editingDepartment = ref(null);
   const searchQuery = ref('');
   const deletingId = ref(null);
+  const allowUpdate = ref(false);
 
   watch(currentPage, (page) => {
     departmentStore.fetchDepartments(page, pageSize);
@@ -94,17 +102,19 @@
   });
 
   const fetchDepartments = async () => {
-    await departmentStore.fetchDepartments();
+    await departmentStore.fetchDepartments(currentPage.value, pageSize);
   }
 
   function openAddModal() {
     editingDepartment.value = null; // tạo mới
     showModal.value = true;
+    allowUpdate.value = true;
   }
 
-  function openEditModal(department) {
+  function openEditModal(department, isAllowUpdate = false) {
     editingDepartment.value = { ...department };
     showModal.value = true;
+    allowUpdate.value = isAllowUpdate;
   }
 
   const deleteDepartment = async (id) => {
@@ -125,7 +135,7 @@
 
       if (result.status === 200) {
         ElMessage.success('Thay đổi trạng thái thành công');
-        await departmentStore.fetchDepartments();
+        await departmentStore.fetchDepartments(currentPage.value, pageSize);
       } else {
         ElMessage.error('Thay đổi trạng thái thất bại');
       }
